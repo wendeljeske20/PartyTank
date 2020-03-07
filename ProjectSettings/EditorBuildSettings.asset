@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/NUNet/ExampleApplication/Menu/NetworkMenu.unity
+    guid: 891190e85f38d04428fbf8e66774446d
+  - enabled: 1
+    path: Assets/NUNet/ExampleApplication/Application/Application.unity
+    guid: 94c44fc8b7f04464ca437f7a60b3efc7
   m_configObjects: {}
