@@ -8,112 +8,118 @@ using UnityEngine.UI;
 using NUNet;
 using UnityEngine.SceneManagement;
 
-public class NetworkMenuManager : MonoBehaviour
+namespace Game
 {
-    [SerializeField]
-    private InputField ipAddressField;
+	public class NetworkMenuManager : MonoBehaviour
+	{
+		public LobbyManager lobbyManager;
 
-    [SerializeField]
-    private InputField portField;
-    private string lastPort = "";
+		[SerializeField]
+		private InputField ipAddressField;
 
-    [SerializeField]
-    private Transform serverListPanel;
+		[SerializeField]
+		private InputField portField;
+		private string lastPort = "";
 
-    [SerializeField]
-    private GameObject serverEntryPrefab;
+		[SerializeField]
+		private Transform serverListPanel;
 
-    private HashSet<IPEndPoint> availableServers;
+		[SerializeField]
+		private GameObject serverEntryPrefab;
 
-    private void Awake()
-    {
-        availableServers = new HashSet<IPEndPoint>();
+		private HashSet<IPEndPoint> availableServers;
 
-        //Register Callbacks
-        NUClient.onBroadcastResponse += ServerFound;
-        NUClient.onConnected += ConnectedToServer;
-    }
+		private void Awake()
+		{
+			availableServers = new HashSet<IPEndPoint>();
 
-    private void Start()
-    {
-        NUClient.SetupBroadcast(NUUtilities.ListIPv4Addresses()[0]);
-    }
+			//Register Callbacks
+			NUClient.onBroadcastResponse += ServerFound;
+			NUClient.onConnected += ConnectedToServer;
+		}
 
-    private void Update()
-    {
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            NUClient.Broadcast(new Packet("PING"));
-        }
-    }
+		private void Start()
+		{
+			NUClient.SetupBroadcast(NUUtilities.ListIPv4Addresses()[0]);
+		}
 
-    private void ConnectedToServer()
-    {
-        SceneManager.LoadScene(1);
-    }
+		private void Update()
+		{
+			if (Input.GetKeyUp(KeyCode.Space))
+			{
+				NUClient.Broadcast(new Packet("PING"));
+			}
+		}
 
-    public void ConnectToServer()
-    {
-        Debug.Log("Connecting to server: " + ipAddressField.text + ":" + portField.text);
-        NUClient.Connect(ipAddressField.text, ushort.Parse(portField.text));
-    }
+		private void ConnectedToServer()
+		{
+			lobbyManager.gameObject.SetActive(true);
+		}
 
-    public void ConnectToServer(IPEndPoint endPoint, GameObject serverEntry)
-    {
-        Debug.Log("Connecting to server: " + endPoint.ToString());
-        NUClient.Connect(endPoint.Address, (ushort)endPoint.Port);
-    }
+		public void ConnectToServer()
+		{
+			Debug.Log("Connecting to server: " + ipAddressField.text + ":" + portField.text);
+			NUClient.Connect(ipAddressField.text, ushort.Parse(portField.text));
+		}
 
-    public void ValidatePort(string port)
-    {
-        foreach(char c in port)
-        {
-            if((byte)c < (byte)'0' || (byte)c > (byte)'9')
-            {
-                portField.text = lastPort;
-                return;
-            }
-        }
+		public void ConnectToServer(IPEndPoint endPoint, GameObject serverEntry)
+		{
+			Debug.Log("Connecting to server: " + endPoint.ToString());
+			NUClient.Connect(endPoint.Address, (ushort)endPoint.Port);
+		}
 
-        int intPort = 1;
-        if(int.TryParse(port, out intPort))
-        {
-            if (intPort > ushort.MaxValue || intPort < 1)
-                portField.text = lastPort;
-        }
+		public void ValidatePort(string port)
+		{
+			foreach (char c in port)
+			{
+				if ((byte)c < (byte)'0' || (byte)c > (byte)'9')
+				{
+					portField.text = lastPort;
+					return;
+				}
+			}
+
+			int intPort = 1;
+			if (int.TryParse(port, out intPort))
+			{
+				if (intPort > ushort.MaxValue || intPort < 1)
+					portField.text = lastPort;
+			}
 
 
-        lastPort = port;
-    }
+			lastPort = port;
+		}
 
-    public void CreateNewServer()
-    {
-        NUServer.Start(NUUtilities.ListIPv4Addresses()[0]);
-        NUClient.Connect(NUUtilities.ListIPv4Addresses()[0]);
-    }
+		public void CreateNewServer()
+		{
+			NUServer.Start(NUUtilities.ListIPv4Addresses()[0]);
+			NUClient.Connect(NUUtilities.ListIPv4Addresses()[0]);
+			lobbyManager.gameObject.SetActive(true);
+		}
 
-    public void ServerFound(BroadcastPacket brdPacket)
-    {
-        //Extract port from package
-        ushort port = ushort.Parse(brdPacket.packet.GetMessageData());
-        IPEndPoint endPoint = new IPEndPoint(brdPacket.origin, (int)port);
+		public void ServerFound(BroadcastPacket brdPacket)
+		{
+			//Extract port from package
+			ushort port = ushort.Parse(brdPacket.packet.GetMessageData());
+			IPEndPoint endPoint = new IPEndPoint(brdPacket.origin, (int)port);
 
-        //Try to add server
-        if (!availableServers.Add(endPoint))
-            return;
+			//Try to add server
+			if (!availableServers.Add(endPoint))
+				return;
 
-        //Instantiate GUI Prefab
-        GameObject serverEntry = GameObject.Instantiate(serverEntryPrefab, serverListPanel);
+			//Instantiate GUI Prefab
+			GameObject serverEntry = GameObject.Instantiate(serverEntryPrefab, serverListPanel);
 
-        Text[] texts = serverEntry.GetComponentsInChildren<Text>();
-        //Update IPAddress
-        texts[0].text = brdPacket.origin.ToString();
-        //Update Port
-        texts[1].text = port.ToString();
+			Text[] texts = serverEntry.GetComponentsInChildren<Text>();
+			//Update IPAddress
+			texts[0].text = brdPacket.origin.ToString();
+			//Update Port
+			texts[1].text = port.ToString();
 
-        Button connect = serverEntry.GetComponentInChildren<Button>();
-        connect.onClick.AddListener(() => { ConnectToServer(endPoint, serverEntry); });
+			Button connect = serverEntry.GetComponentInChildren<Button>();
+			connect.onClick.AddListener(() => { ConnectToServer(endPoint, serverEntry); });
 
-    }
+		}
 
+	}
 }

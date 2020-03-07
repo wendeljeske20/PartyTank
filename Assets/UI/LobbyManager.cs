@@ -12,7 +12,16 @@ public class LobbyManager : MonoBehaviour
 {
 	public bool allReady;
 
-	private void StartMatch()
+	private void Awake()
+	{
+		gameObject.SetActive(false);
+	}
+
+	private void Update()
+	{
+
+	}
+	public void StartMatch()
 	{
 		SceneManager.LoadScene(1);
 	}
