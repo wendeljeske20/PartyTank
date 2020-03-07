@@ -54,6 +54,7 @@ namespace Game
 		private void ConnectedToServer()
 		{
 			lobbyManager.gameObject.SetActive(true);
+			//SceneManager.LoadScene(1);
 		}
 
 		public void ConnectToServer()

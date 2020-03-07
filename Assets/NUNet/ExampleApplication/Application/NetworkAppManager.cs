@@ -14,7 +14,6 @@ using UnityEngine.SceneManagement;
 
 public class NetworkAppManager : MonoBehaviour
 {
-	private List<Guid> connectedPlayers = new List<Guid>();
 	private Dictionary<Guid, GameObject> playerObjects = new Dictionary<Guid, GameObject>();
 
 	[SerializeField]
@@ -43,7 +42,7 @@ public class NetworkAppManager : MonoBehaviour
 		//If is Server and Client, register Player
 		if (NUServer.started && NUClient.connected)
 		{
-			connectedPlayers.Add(NUClient.guid);
+			LobbyManager.connectedPlayers.Add(NUClient.guid);
 		}
 
 		NUClient.onPacketReceived += ClientReceivedPacket;
@@ -52,7 +51,7 @@ public class NetworkAppManager : MonoBehaviour
 
 	private void ClientConnected(Guid id)
 	{
-		connectedPlayers.Add(id);
+		LobbyManager.connectedPlayers.Add(id);
 		Packet firstPacket = new Packet("First", packetId: NUUtilities.GeneratePacketId());
 		Packet secondPacket = new Packet("Second", packetId: NUUtilities.GeneratePacketId());
 		Packet thirdPacket = new Packet("Third", packetId: NUUtilities.GeneratePacketId());
@@ -69,7 +68,7 @@ public class NetworkAppManager : MonoBehaviour
 
 	private void ClientReconnected(Guid id)
 	{
-		connectedPlayers.Add(id);
+		LobbyManager.connectedPlayers.Add(id);
 	}
 
 	private void ClientDisconnected()
@@ -149,7 +148,7 @@ public class NetworkAppManager : MonoBehaviour
 
 	private void ServerReceivedPacket(Guid guid, Packet packet)
 	{
-		if (!connectedPlayers.Contains(guid))
+		if (!LobbyManager.connectedPlayers.Contains(guid))
 			return;
 
 		string msg = packet.GetMessageData();
@@ -310,7 +309,7 @@ public class NetworkAppManager : MonoBehaviour
 		}
 
 		NUServer.SendReliable(new Packet("Dsc|" + guid, NUServer.GetConnectedClients()));
-		connectedPlayers.Remove(guid);
+		LobbyManager.connectedPlayers.Remove(guid);
 	}
 
 	private void PlayerTimedOutFromServer(Guid guid)
@@ -322,7 +321,7 @@ public class NetworkAppManager : MonoBehaviour
 		}
 
 		NUServer.SendReliable(new Packet("Dsc|" + guid, NUServer.GetConnectedClients()));
-		connectedPlayers.Remove(guid);
+		LobbyManager.connectedPlayers.Remove(guid);
 	}
 
 	private string GetPlayersData()
