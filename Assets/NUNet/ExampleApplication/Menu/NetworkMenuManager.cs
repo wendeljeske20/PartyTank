@@ -51,6 +51,8 @@ namespace Game
 
 		private void Update()
 		{
+			LobbyManager.playerName = nameField.text;
+
 			if (Input.GetKeyUp(KeyCode.Space))
 			{
 				NUClient.Broadcast(new Packet("PING"));
@@ -60,7 +62,8 @@ namespace Game
 		private void ConnectedToServer()
 		{
 			lobbyManager.gameObject.SetActive(true);
-			LobbyManager.playerName = nameField.text + " xxx";
+			Packet packet = new Packet("PlayerConnected|" + "000" + ";" + LobbyManager.playerName);
+			NUClient.SendReliable(packet);
 		}
 
 		public void ConnectToServer()

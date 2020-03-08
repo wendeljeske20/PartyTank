@@ -55,6 +55,7 @@ public class LobbyManager : MonoBehaviour
 
 	private void Update()
 	{
+		GameObject.Find("Text123").GetComponent<Text>().text = playerName;
 		//string msg = "";
 		//foreach (var pData in playerDatas)
 		//{
@@ -87,9 +88,13 @@ public class LobbyManager : MonoBehaviour
 	{
 		connectedPlayers.Add(guid);
 
-		Packet packet = new Packet("PlayerConnected|" + guid + ";" + playerName);
-		NUClient.SendReliable(packet);
+		//UnityTask.DelayedAction(1f, () =>
+		//{
+		//Packet packet = new Packet("PlayerConnected|" + guid + ";" + playerName);
+		//NUClient.SendReliable(packet);
+		//});
 		Debug.Log("Connected");
+
 	}
 
 	private void ClientReconnected(Guid guid)
@@ -124,7 +129,7 @@ public class LobbyManager : MonoBehaviour
 
 	private void PlayerDisconnectFromServer(Guid guid)
 	{
-		Packet packet = new Packet("PlayerDisconnected|");
+		Packet packet = new Packet("PlayerDisconnected|" + guid);
 		NUClient.SendReliable(packet);
 		connectedPlayers.Remove(guid);
 		//Debug.Log("Disconnected");
@@ -153,21 +158,21 @@ public class LobbyManager : MonoBehaviour
 		if (args[0] == "PlayerConnected")
 		{
 			string[] data = args[1].Split(';');
-
-			Guid guid = new Guid(data[0]);
+			//Guid guid = new Guid(data[0]);
 			string name = data[1];
 
 			PlayerNetData playerData = new PlayerNetData();
 			playerData.name = name;
 			playerData.index = -1;
 
-			Debug.Log("guid   " + guid);
-			if (playerDatas.ContainsKey(guid))
+			Debug.Log("guid   " + clientGuid);
+			if (playerDatas.ContainsKey(clientGuid))
 			{
 				Debug.Log("continue " + playerData.name);
+				Debug.Log("RECONNECT" + playerData.name);
 				return;
 			}
-			playerDatas.Add(guid, playerData);
+			playerDatas.Add(clientGuid, playerData);
 
 			string sendMsg = "PlayerConnected";
 			foreach (var pData in playerDatas)
@@ -181,15 +186,17 @@ public class LobbyManager : MonoBehaviour
 		}
 		else if (args[0] == "PlayerDisconnected")
 		{
-			int index = playerDatas[clientGuid].index;
+			string[] data = args[1].Split(';');
+			Guid guid = new Guid(data[0]);
+			int index = playerDatas[guid].index;
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = "111";
 
 			string sendMsg = "PlayerDisconnected";
-			var pData = playerDatas[clientGuid];
+			var pData = playerDatas[guid];
 
-			sendMsg += string.Format("|{0};{1};{2}", clientGuid, pData.name, pData.index);
+			sendMsg += string.Format("|{0};{1};{2}", guid, pData.name, pData.index);
 
 			//playerDatas.Remove(guid);
 
@@ -269,7 +276,6 @@ public class LobbyManager : MonoBehaviour
 				playerData.name = name;
 				playerData.index = index;
 
-				Debug.Log("CLIENT DEBUG");
 				//Might be a reconnected player
 				//if (playerDatas.TryGetValue(guid, out playerData))
 				//{
@@ -279,6 +285,8 @@ public class LobbyManager : MonoBehaviour
 
 				if (playerDatas.ContainsKey(guid))
 				{
+
+					Debug.Log("RECONNECT");
 					continue;
 				}
 
