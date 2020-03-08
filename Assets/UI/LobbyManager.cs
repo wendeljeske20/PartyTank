@@ -13,7 +13,7 @@ public class LobbyManager : MonoBehaviour
 {
 	public static List<Guid> connectedPlayers = new List<Guid>();
 	public bool allReady;
-	public static string playerName;
+	public static string playerName = "123";
 
 	public Transform teamPanel;
 
@@ -83,30 +83,11 @@ public class LobbyManager : MonoBehaviour
 		}
 	}
 
-	private void Join(int index)
-	{
-		Packet packet = new Packet("PlayerJoin|" + playerName + "xxx" + ";" + index);
-		NUClient.SendReliable(packet);
-	}
-
-	public void SendStartMatch()
-	{
-		Packet packet = new Packet("StartMatch");
-		NUClient.SendReliable(packet);
-	}
-
-	private void StartMatch()
-	{
-		SceneManager.LoadScene(1);
-	}
-
-
-
 	private void ClientConnected(Guid guid)
 	{
 		connectedPlayers.Add(guid);
 
-		Packet packet = new Packet("PlayerConnected|");
+		Packet packet = new Packet("PlayerConnected|" + guid + ";" + playerName);
 		NUClient.SendReliable(packet);
 		Debug.Log("Connected");
 	}
@@ -122,6 +103,23 @@ public class LobbyManager : MonoBehaviour
 		//Packet packet = new Packet("PlayerDisconnected");
 		//NUClient.SendReliable(packet);
 		Debug.Log("DSC AAAAAAA");
+	}
+
+	private void Join(int index)
+	{
+		Packet packet = new Packet("PlayerJoin|" + playerName + ";" + index);
+		NUClient.SendReliable(packet);
+	}
+
+	public void SendStartMatch()
+	{
+		Packet packet = new Packet("StartMatch");
+		NUClient.SendReliable(packet);
+	}
+
+	private void StartMatch()
+	{
+		SceneManager.LoadScene(1);
 	}
 
 	private void PlayerDisconnectFromServer(Guid guid)
@@ -142,9 +140,9 @@ public class LobbyManager : MonoBehaviour
 
 	}
 
-	private void ServerReceivedPacket(Guid guid, Packet packet)
+	private void ServerReceivedPacket(Guid clientGuid, Packet packet)
 	{
-		if (!connectedPlayers.Contains(guid))
+		if (!connectedPlayers.Contains(clientGuid))
 			return;
 
 		string msg = packet.GetMessageData();
@@ -154,6 +152,23 @@ public class LobbyManager : MonoBehaviour
 
 		if (args[0] == "PlayerConnected")
 		{
+			string[] data = args[1].Split(';');
+
+			Guid guid = new Guid(data[0]);
+			string name = data[1];
+
+			PlayerNetData playerData = new PlayerNetData();
+			playerData.name = name;
+			playerData.index = -1;
+
+			Debug.Log("guid   " + guid);
+			if (playerDatas.ContainsKey(guid))
+			{
+				Debug.Log("continue " + playerData.name);
+				return;
+			}
+			playerDatas.Add(guid, playerData);
+
 			string sendMsg = "PlayerConnected";
 			foreach (var pData in playerDatas)
 			{
@@ -166,15 +181,15 @@ public class LobbyManager : MonoBehaviour
 		}
 		else if (args[0] == "PlayerDisconnected")
 		{
-			int index = playerDatas[guid].index;
+			int index = playerDatas[clientGuid].index;
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = "111";
 
 			string sendMsg = "PlayerDisconnected";
-			var pData = playerDatas[guid];
+			var pData = playerDatas[clientGuid];
 
-			sendMsg += string.Format("|{0};{1};{2}", guid, pData.name, pData.index);
+			sendMsg += string.Format("|{0};{1};{2}", clientGuid, pData.name, pData.index);
 
 			//playerDatas.Remove(guid);
 
@@ -186,28 +201,28 @@ public class LobbyManager : MonoBehaviour
 		{
 			string[] data = args[1].Split(';');
 
-			int index = int.Parse(data[1]);
 			string name = data[0];
+			int index = int.Parse(data[1]);
+
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = name;
 
+			playerDatas[clientGuid].index = index;
 
-			if (NUClient.connected && guid == NUClient.guid) //Is Server Player
+
+			if (NUClient.connected && clientGuid == NUClient.guid) //Is Server Player
 			{
 
 			}
 
-			PlayerNetData playerData = new PlayerNetData();
-			playerData.name = name;
-			playerData.index = index;
 
-			playerDatas.Add(guid, playerData);
 
 			string sendMsg = "PlayerJoin";
 			foreach (var pData in playerDatas)
 			{
-				sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.index);
+				if (pData.Value.index != -1)
+					sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.index);
 			}
 
 			Debug.Log("Send message: " + sendMsg);
@@ -243,17 +258,18 @@ public class LobbyManager : MonoBehaviour
 				string[] data = args[i].Split(';');
 
 				Guid guid = new Guid(data[0]);
-				int index = int.Parse(data[2]);
 				string name = data[1];
+				int index = int.Parse(data[2]);
+
 
 				//PlayerLobbyPanel playerPanel = lobbyPanels[index];
 				//playerPanel.nameText.text = name;
 
-				//PlayerNetData playerData = new PlayerNetData();
-				//playerData.name = name;
-				//playerData.index = index;
+				PlayerNetData playerData = new PlayerNetData();
+				playerData.name = name;
+				playerData.index = index;
 
-
+				Debug.Log("CLIENT DEBUG");
 				//Might be a reconnected player
 				//if (playerDatas.TryGetValue(guid, out playerData))
 				//{
@@ -261,17 +277,17 @@ public class LobbyManager : MonoBehaviour
 				//	continue;
 				//}
 
-				//if (playerDatas.ContainsKey(guid))
-				//{
-				//	continue;
-				//}
+				if (playerDatas.ContainsKey(guid))
+				{
+					continue;
+				}
 
 				if (guid == NUClient.guid)
 				{
 					//playerObj.AddComponent<PlayerBehaviour>();
 				}
 
-				//playerDatas.Add(guid, playerData);
+				playerDatas.Add(guid, playerData);
 			}
 		}
 		else if (args[0] == "PlayerDisconnected")
@@ -295,14 +311,18 @@ public class LobbyManager : MonoBehaviour
 
 				Guid guid = new Guid(data[0]);
 				int index = int.Parse(data[2]);
-				string name = data[1]; ;
+				string name = data[1];
 
 				PlayerLobbyPanel playerPanel = lobbyPanels[index];
 				playerPanel.nameText.text = name;
 
-				PlayerNetData playerData = new PlayerNetData();
-				playerData.name = name;
-				playerData.index = index;
+				playerDatas[guid].index = index;
+
+				//PlayerNetData playerData = new PlayerNetData();
+				//playerData.name = name;
+				//playerData.index = index;
+
+
 
 
 				//Might be a reconnected player
@@ -322,17 +342,14 @@ public class LobbyManager : MonoBehaviour
 					//playerObj.AddComponent<PlayerBehaviour>();
 				}
 
-				Debug.Log(playerData);
-				playerDatas.Add(guid, playerData);
+
+				//Debug.Log(playerData);
+				//playerDatas.Add(guid, playerData);
 			}
 		}
 		else if (args[0] == "StartMatch")
 		{
 			StartMatch();
-		}
-		else if (args[0] == "Sta") //State Data
-		{
-
 		}
 		else if (args[0] == "Dsc")
 		{
