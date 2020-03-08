@@ -13,7 +13,7 @@ public class LobbyManager : MonoBehaviour
 {
 	public static List<Guid> connectedPlayers = new List<Guid>();
 	public bool allReady;
-	public string playerName;
+	public static string playerName;
 
 	public Transform teamPanel;
 
@@ -28,7 +28,7 @@ public class LobbyManager : MonoBehaviour
 		NUServer.onClientReconnected += ClientReconnected;
 
 		//Remove'em when they Disconnect
-		//NUServer.onClientDisconnected += PlayerDisconnectFromServer;
+		NUServer.onClientDisconnected += PlayerDisconnectFromServer;
 		//NUServer.onClientTimedOut += PlayerTimedOutFromServer;
 		NUServer.onClientPacketReceived += ServerReceivedPacket;
 
@@ -47,6 +47,7 @@ public class LobbyManager : MonoBehaviour
 			lobbyPanels[i].joinButton.onClick.AddListener(() => Join(index));
 		}
 
+		//Application.quitting += () => ClientDisconnected();
 		gameObject.SetActive(false);
 	}
 
@@ -91,12 +92,32 @@ public class LobbyManager : MonoBehaviour
 
 	private void ClientDisconnected()
 	{
+		//Packet packet = new Packet("PlayerDisconnected");
+		//NUClient.SendReliable(packet);
+		Debug.Log("DSC AAAAAAA");
+	}
+
+	private void PlayerDisconnectFromServer(Guid guid)
+	{
+		Packet packet = new Packet("PlayerDisconnected|");
+		NUClient.SendReliable(packet);
+		LobbyManager.connectedPlayers.Remove(guid);
+		//Debug.Log("Disconnected");
+
+		//GameObject playerObject;
+		//if (playerObjects.TryGetValue(guid, out playerObject))
+		//{
+		//	GameObject.Destroy(playerObject);
+		//	playerObjects.Remove(guid);
+		//}
+
+		//NUServer.SendReliable(new Packet("Dsc|" + guid, NUServer.GetConnectedClients()));
 
 	}
 
 	private void ServerReceivedPacket(Guid guid, Packet packet)
 	{
-		if (!LobbyManager.connectedPlayers.Contains(guid))
+		if (!connectedPlayers.Contains(guid))
 			return;
 
 		string msg = packet.GetMessageData();
@@ -111,6 +132,24 @@ public class LobbyManager : MonoBehaviour
 			{
 				sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.index);
 			}
+
+			Debug.Log("Send message: " + sendMsg);
+			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
+
+		}
+		else if (args[0] == "PlayerDisconnected")
+		{
+			int index = playerDatas[guid].index;
+
+			PlayerLobbyPanel playerPanel = lobbyPanels[index];
+			playerPanel.nameText.text = "111";
+
+			string sendMsg = "PlayerDisconnected";
+			var pData = playerDatas[guid];
+
+			sendMsg += string.Format("|{0};{1};{2}", guid.ToString(), pData.name, pData.index);
+
+			playerDatas.Remove(guid);
 
 			Debug.Log("Send message: " + sendMsg);
 			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
@@ -145,7 +184,6 @@ public class LobbyManager : MonoBehaviour
 			}
 
 			Debug.Log("Send message: " + sendMsg);
-
 
 			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
 		}
@@ -188,7 +226,7 @@ public class LobbyManager : MonoBehaviour
 				playerData.name = name;
 				playerData.index = index;
 
-				
+
 				//Might be a reconnected player
 				if (playerDatas.TryGetValue(guid, out playerData))
 				{
@@ -203,6 +241,19 @@ public class LobbyManager : MonoBehaviour
 
 				playerDatas.Add(guid, playerData);
 			}
+		}
+		else if (args[0] == "PlayerDisconnected")
+		{
+			string[] data = args[1].Split(';');
+
+			Guid guid = new Guid(data[0]);
+			int index = int.Parse(data[2]);
+			string name = data[1]; ;
+
+			PlayerLobbyPanel playerPanel = lobbyPanels[index];
+			playerPanel.nameText.text = "222";
+
+			playerDatas.Remove(guid);
 		}
 		else if (args[0] == "PlayerJoin") //Player Profile Data
 		{

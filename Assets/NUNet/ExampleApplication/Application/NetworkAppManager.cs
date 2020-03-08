@@ -22,12 +22,6 @@ public class NetworkAppManager : MonoBehaviour
 	[SerializeField]
 	private GameObject playerServerPrefab;
 
-	[SerializeField]
-	private InputField inputField;
-
-	[SerializeField]
-	private GameObject guiCanvas;
-
 	private void Awake()
 	{
 		//Register Players when they Connect
@@ -49,21 +43,13 @@ public class NetworkAppManager : MonoBehaviour
 		NUClient.onDisconnected += ClientDisconnected;
 	}
 
+	private void Start()
+	{
+		Spawn();
+	}
 	private void ClientConnected(Guid id)
 	{
 		LobbyManager.connectedPlayers.Add(id);
-		Packet firstPacket = new Packet("First", packetId: NUUtilities.GeneratePacketId());
-		Packet secondPacket = new Packet("Second", packetId: NUUtilities.GeneratePacketId());
-		Packet thirdPacket = new Packet("Third", packetId: NUUtilities.GeneratePacketId());
-		Debug.LogError("Third");
-		Debug.LogError("Second");
-		Debug.LogError("First");
-		thirdPacket.OverrideDestination(NUServer.GetConnectedClients());
-		NUServer.SendReliableSequenced(thirdPacket);    //Send third first
-		secondPacket.OverrideDestination(NUServer.GetConnectedClients());
-		NUServer.SendReliableSequenced(secondPacket);   //Send second second
-		firstPacket.OverrideDestination(NUServer.GetConnectedClients());
-		NUServer.SendReliableSequenced(firstPacket);    //Then first third
 	}
 
 	private void ClientReconnected(Guid id)
@@ -78,72 +64,12 @@ public class NetworkAppManager : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		if (NUServer.started) //Is Server!
-		{
-			//Send Game-state to everyone online
-			Packet stateData = new Packet(GetStateMsg(), NUServer.GetConnectedClients());
-			NUServer.SendUnreliable(stateData);
-		}
-
-		if (Input.GetKeyUp(KeyCode.O) && NUClient.connected)
-		{
-			byte[] reandomBuffer = new byte[8192];
-			for (int i = 0; i < 8192; i++)
-			{
-				reandomBuffer[i] = (byte)(Random.Range(0, 255));
-			}
-			Packet multipartTestPacket = new Packet(reandomBuffer);
-			NUClient.SendReliable(multipartTestPacket);
-		}
-
-		if (Input.GetKeyUp(KeyCode.I) && NUServer.started)
-		{
-			byte[] reandomBuffer = new byte[8192];
-			for (int i = 0; i < 8192; i++)
-			{
-				reandomBuffer[i] = (byte)(Random.Range(0, 255));
-			}
-			Packet multipartTestPacket = new Packet(reandomBuffer,
-				NUServer.GetConnectedClients(), Packet.TypeFlag.DATA);
-			NUServer.SendReliable(multipartTestPacket);
-		}
-
-		if (Input.GetKeyUp(KeyCode.J))
-		{
-			Packet firstPacket = new Packet("First", packetId: NUUtilities.GeneratePacketId());
-			Packet secondPacket = new Packet("Second", packetId: NUUtilities.GeneratePacketId());
-			Packet thirdPacket = new Packet("Third", packetId: NUUtilities.GeneratePacketId());
-			Debug.LogError("Third");
-			Debug.LogError("Second");
-			Debug.LogError("First");
-			if (NUServer.started)
-			{
-				thirdPacket.OverrideDestination(NUServer.GetConnectedClients());
-				NUServer.SendReliableSequenced(thirdPacket);    //Send third first
-				secondPacket.OverrideDestination(NUServer.GetConnectedClients());
-				NUServer.SendReliableSequenced(secondPacket);   //Send second second
-				firstPacket.OverrideDestination(NUServer.GetConnectedClients());
-				NUServer.SendReliableSequenced(firstPacket);    //Then first third
-			}
-			else if (NUClient.connected)
-			{
-				NUClient.SendReliableSequenced(thirdPacket);    //Send third first
-				NUClient.SendReliableSequenced(secondPacket);   //Send second second
-				NUClient.SendReliableSequenced(firstPacket);    //Then first third
-			}
-		}
 	}
 
 	public void Spawn()
 	{
-		if (inputField.text.Length == 0)
-		{
-			inputField.Select();
-			return;
-		}
-		Packet spawnPacket = new Packet("Spawn|" + inputField.text);
+		Packet spawnPacket = new Packet("Spawn|" + LobbyManager.playerName);
 		NUClient.SendReliable(spawnPacket);
-		guiCanvas.SetActive(false);
 	}
 
 	private void ServerReceivedPacket(Guid guid, Packet packet)
@@ -153,22 +79,17 @@ public class NetworkAppManager : MonoBehaviour
 
 		string msg = packet.GetMessageData();
 		string[] args = msg.Split('|');
+
 		if (args[0] == "Spawn")
 		{
 			//Spawn Player on Random Position
-			Vector3 spwnPos = Vector3.right * Random.Range(-5.0f, 5.0f);
+			Vector3 spawnPosition = Vector3.right * Random.Range(-5.0f, 5.0f);
 
-			GameObject playerObj;
+			GameObject playerObj = GameObject.Instantiate(playerServerPrefab, spawnPosition, Quaternion.identity);
+
 			if (NUClient.connected && guid == NUClient.guid) //Is Server Player
 			{
-				playerObj = GameObject.Instantiate(playerServerPrefab,
-					spwnPos, Quaternion.identity);
 				playerObj.AddComponent<PlayerBehaviour>();
-			}
-			else
-			{
-				playerObj = GameObject.Instantiate(playerServerPrefab,
-					spwnPos, Quaternion.identity);
 			}
 
 			playerObj.name = "Player (" + args[1] + ")";

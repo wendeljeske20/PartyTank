@@ -60,8 +60,7 @@ namespace Game
 		private void ConnectedToServer()
 		{
 			lobbyManager.gameObject.SetActive(true);
-			lobbyManager.playerName = nameField.text;
-			//SceneManager.LoadScene(1);
+			LobbyManager.playerName = nameField.text;
 		}
 
 		public void ConnectToServer()
