@@ -8,7 +8,6 @@ using UnityEngine.UI;
 using NUNet;
 using UnityEngine.SceneManagement;
 using Game;
-using System.Linq;
 
 public class LobbyManager : MonoBehaviour
 {
@@ -56,6 +55,12 @@ public class LobbyManager : MonoBehaviour
 
 	private void Update()
 	{
+		//string msg = "";
+		//foreach (var pData in playerDatas)
+		//{
+		//	msg += "+++ " + pData.Key + "  " + pData.Value.name + "   " + pData.Value.index;
+		//}
+		//Debug.Log(msg);
 		List<Guid> guids = new List<Guid>(playerDatas.Keys);
 
 		if (guids == null)
@@ -69,22 +74,12 @@ public class LobbyManager : MonoBehaviour
 			{
 				PlayerNetData pData = playerDatas[guids[i]];
 
-				//if (playerDatas.TryGetValue(guids[i], out pData))
-				//{
-					
-
-				//}
-				if(pData != null)
-				{
-					text.text = pData.name + "     " + guids[i] + "     " + pData.index;
-				}
-
+				text.text = pData.name + "     " + guids[i] + "     " + pData.index;
 			}
 			else
 			{
-				text.text = "";
+				text.text = "...";
 			}
-
 		}
 	}
 
@@ -133,7 +128,7 @@ public class LobbyManager : MonoBehaviour
 	{
 		Packet packet = new Packet("PlayerDisconnected|");
 		NUClient.SendReliable(packet);
-		LobbyManager.connectedPlayers.Remove(guid);
+		connectedPlayers.Remove(guid);
 		//Debug.Log("Disconnected");
 
 		//GameObject playerObject;
@@ -247,16 +242,16 @@ public class LobbyManager : MonoBehaviour
 			{
 				string[] data = args[i].Split(';');
 
-				Guid guid = Guid.NewGuid() ;
+				Guid guid = new Guid(data[0]);
 				int index = int.Parse(data[2]);
 				string name = data[1];
 
-				PlayerLobbyPanel playerPanel = lobbyPanels[index];
-				playerPanel.nameText.text = name;
+				//PlayerLobbyPanel playerPanel = lobbyPanels[index];
+				//playerPanel.nameText.text = name;
 
-				PlayerNetData playerData = new PlayerNetData();
-				playerData.name = name;
-				playerData.index = index;
+				//PlayerNetData playerData = new PlayerNetData();
+				//playerData.name = name;
+				//playerData.index = index;
 
 
 				//Might be a reconnected player
@@ -266,12 +261,17 @@ public class LobbyManager : MonoBehaviour
 				//	continue;
 				//}
 
+				//if (playerDatas.ContainsKey(guid))
+				//{
+				//	continue;
+				//}
+
 				if (guid == NUClient.guid)
 				{
 					//playerObj.AddComponent<PlayerBehaviour>();
 				}
 
-				playerDatas.Add(guid, playerData);
+				//playerDatas.Add(guid, playerData);
 			}
 		}
 		else if (args[0] == "PlayerDisconnected")
@@ -306,19 +306,23 @@ public class LobbyManager : MonoBehaviour
 
 
 				//Might be a reconnected player
-				if (playerDatas.TryGetValue(guid, out playerData))
+				//if (playerDatas.TryGetValue(guid, out playerData))
+				//{
+				//	Debug.Log("same   " + guid);
+				//	continue;
+				//}
+
+				if (playerDatas.ContainsKey(guid))
 				{
-					Debug.Log("same   " + guid);
 					continue;
 				}
-
-
 
 				if (guid == NUClient.guid)
 				{
 					//playerObj.AddComponent<PlayerBehaviour>();
 				}
 
+				Debug.Log(playerData);
 				playerDatas.Add(guid, playerData);
 			}
 		}
