@@ -6,9 +6,8 @@ using UnityEngine.UI;
 
 public class PlayerLobbyPanel : MonoBehaviour
 {
-	public new string name;
-	public bool ready;
-
 	public TextMeshProUGUI nameText;
 	public Image readyImage;
+	public Button joinButton;
+	public int index;
 }

@@ -7,15 +7,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using NUNet;
 using UnityEngine.SceneManagement;
+using Game;
 
 public class LobbyManager : MonoBehaviour
 {
 	public static List<Guid> connectedPlayers = new List<Guid>();
 	public bool allReady;
+	public string playerName;
 
 	public Transform teamPanel;
 
-	public PlayerLobbyPanel playerPanelPrefab;
+	//public PlayerLobbyPanel playerPanelPrefab;
+	public PlayerLobbyPanel[] lobbyPanels;
 
 	public Dictionary<Guid, PlayerLobbyPanel> playerLobbyPanels = new Dictionary<Guid, PlayerLobbyPanel>();
 
@@ -38,6 +41,12 @@ public class LobbyManager : MonoBehaviour
 		NUClient.onPacketReceived += ClientReceivedPacket;
 		NUClient.onDisconnected += ClientDisconnected;
 
+		for (int i = 0; i < lobbyPanels.Length; i++)
+		{
+			int index = i;
+			lobbyPanels[i].joinButton.onClick.AddListener(() => Join(index));
+		}
+
 		gameObject.SetActive(false);
 	}
 
@@ -46,17 +55,24 @@ public class LobbyManager : MonoBehaviour
 
 	}
 
-	private void ClientConnected(Guid id)
+	private void Join(int index)
 	{
-		connectedPlayers.Add(id);
-		Packet packet = new Packet("Prs|" + "W3W2");
+		Packet packet = new Packet("PlayerJoin|" + playerName + "zzz" + ";" + index);
 		NUClient.SendReliable(packet);
-		Debug.Log("Connect    Prs|" + "W3W2");
 	}
 
-	private void ClientReconnected(Guid id)
+	private void ClientConnected(Guid guid)
 	{
-		connectedPlayers.Add(id);
+		connectedPlayers.Add(guid);
+
+		Packet packet = new Packet("PlayerConnected|");
+		NUClient.SendReliable(packet);
+		Debug.Log("Connected");
+	}
+
+	private void ClientReconnected(Guid guid)
+	{
+		connectedPlayers.Add(guid);
 		Debug.Log("Reconnect");
 	}
 
@@ -67,48 +83,57 @@ public class LobbyManager : MonoBehaviour
 
 	private void ServerReceivedPacket(Guid guid, Packet packet)
 	{
-		Debug.Log("aaaaaaaa");
 		if (!LobbyManager.connectedPlayers.Contains(guid))
 			return;
 
-		Debug.Log("bbbbbbbb");
 		string msg = packet.GetMessageData();
 		string[] args = msg.Split('|');
-		if (args[0] == "Prs")
+
+		Debug.Log("Received message: " + msg);
+
+		if (args[0] == "PlayerConnected")
 		{
-			Debug.Log("cccccccc");
-			PlayerLobbyPanel playerPanel;
+			string sendMsg = "PlayerConnected";
+			foreach (var panel in playerLobbyPanels)
+			{
+				sendMsg += string.Format("|{0};{1};{2}", panel.Key.ToString(), panel.Value.nameText.text, panel.Value.index);
+			}
+
+			Debug.Log("Send message: " + sendMsg);
+			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
+
+		}
+		else if (args[0] == "PlayerJoin")
+		{
+			string[] data = args[1].Split(';');
+
+			int index = int.Parse(data[1]);
+			string name = data[0];
+
+			PlayerLobbyPanel playerPanel = lobbyPanels[index];
+			playerPanel.index = index;
+			playerPanel.nameText.text = name;
+
+
 			if (NUClient.connected && guid == NUClient.guid) //Is Server Player
 			{
-				playerPanel = GameObject.Instantiate(playerPanelPrefab);
-				playerPanel.transform.SetParent(teamPanel.transform);
 
-				//playerObj = GameObject.Instantiate(playerServerPrefab,
-				//spwnPos, Quaternion.identity);
-				//playerObj.AddComponent<PlayerBehaviour>();
-			}
-			else
-			{
-				playerPanel = GameObject.Instantiate(playerPanelPrefab);
-				playerPanel.transform.SetParent(teamPanel.transform);
-				//playerObj = GameObject.Instantiate(playerServerPrefab,
-				//spwnPos, Quaternion.identity);
 			}
 
-			playerPanel.nameText.text = args[1];
 			playerLobbyPanels.Add(guid, playerPanel);
 
 
 
-			string playerData = "Prs";
-			foreach (var player in playerLobbyPanels)
+			string sendMsg = "PlayerJoin";
+			foreach (var panel in playerLobbyPanels)
 			{
-				playerData += "|" + player.Value.nameText.text; ;
+				sendMsg += string.Format("|{0};{1};{2}", panel.Key.ToString(), panel.Value.nameText.text, panel.Value.index);
 			}
 
+			Debug.Log("Send message: " + sendMsg);
 
-			List<Guid> guids = new List<Guid>(playerLobbyPanels.Keys);
-			NUServer.SendReliable(new Packet(playerData, guids.ToArray()));
+
+			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
 		}
 
 
@@ -125,31 +150,66 @@ public class LobbyManager : MonoBehaviour
 
 		string msg = packet.GetMessageData();
 		string[] args = msg.Split('|');
-		if (args[0] == "Prs") //Player Profile Data
+		Debug.Log("Received message: " + msg);
+
+		if (args[0] == "PlayerConnected")
 		{
 			for (int i = 1; i < args.Length; i++)
 			{
-				string[] plData = args[i].Split(';');
-				Guid guid = new Guid(plData[0]);
+				string[] data = args[i].Split(';');
 
+				Guid guid = new Guid(data[0]);
+				int index = int.Parse(data[2]);
+				string name = data[1];
 
-				PlayerLobbyPanel playerPanel;
+				PlayerLobbyPanel playerPanel = lobbyPanels[index];
+				playerPanel.index = index;
+				playerPanel.nameText.text = name;
 
 				//Might be a reconnected player
 				if (playerLobbyPanels.TryGetValue(guid, out playerPanel))
 				{
-
+					Debug.Log("same   " + guid);
 					continue;
 				}
-
-				playerPanel = GameObject.Instantiate(playerPanelPrefab);
-				playerPanelPrefab.transform.SetParent(teamPanel.transform);
 
 				if (guid == NUClient.guid)
 				{
 					//playerObj.AddComponent<PlayerBehaviour>();
 				}
-				playerPanel.nameText.text = plData[1];
+
+				playerLobbyPanels.Add(guid, playerPanel);
+			}
+		}
+		else if (args[0] == "PlayerJoin") //Player Profile Data
+		{
+			for (int i = 1; i < args.Length; i++)
+			{
+				string[] data = args[i].Split(';');
+
+				Guid guid = new Guid(data[0]);
+				int index = int.Parse(data[2]);
+				string name = data[1]; ;
+
+				PlayerLobbyPanel playerPanel = lobbyPanels[index];
+
+				playerPanel.index = index;
+				playerPanel.nameText.text = name;
+
+				//Might be a reconnected player
+				if (playerLobbyPanels.TryGetValue(guid, out playerPanel))
+				{
+					Debug.Log("same   " + guid);
+					continue;
+				}
+
+
+
+				if (guid == NUClient.guid)
+				{
+					//playerObj.AddComponent<PlayerBehaviour>();
+				}
+
 				playerLobbyPanels.Add(guid, playerPanel);
 			}
 		}

@@ -7,12 +7,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using NUNet;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 namespace Game
 {
 	public class NetworkMenuManager : MonoBehaviour
 	{
 		public LobbyManager lobbyManager;
+
+		public TMP_InputField nameField;
 
 		[SerializeField]
 		private InputField ipAddressField;
@@ -41,6 +44,9 @@ namespace Game
 		private void Start()
 		{
 			NUClient.SetupBroadcast(NUUtilities.ListIPv4Addresses()[0]);
+			nameField.text = "GUESS " + UnityEngine.Random.Range(100, 1000).ToString();
+			ipAddressField.text = "192.168.0.4";
+			portField.text = "25565";
 		}
 
 		private void Update()
@@ -54,6 +60,7 @@ namespace Game
 		private void ConnectedToServer()
 		{
 			lobbyManager.gameObject.SetActive(true);
+			lobbyManager.playerName = nameField.text;
 			//SceneManager.LoadScene(1);
 		}
 
@@ -95,7 +102,7 @@ namespace Game
 		{
 			NUServer.Start(NUUtilities.ListIPv4Addresses()[0]);
 			NUClient.Connect(NUUtilities.ListIPv4Addresses()[0]);
-			lobbyManager.gameObject.SetActive(true);
+			//lobbyManager.gameObject.SetActive(true);
 		}
 
 		public void ServerFound(BroadcastPacket brdPacket)
