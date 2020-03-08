@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using NUNet;
 using UnityEngine.SceneManagement;
 using Game;
+using System.Linq;
 
 public class LobbyManager : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class LobbyManager : MonoBehaviour
 	public static string playerName;
 
 	public Transform teamPanel;
+
+	public Transform spectatorsContent;
 
 	//public PlayerLobbyPanel playerPanelPrefab;
 	public PlayerLobbyPanel[] lobbyPanels;
@@ -53,7 +56,36 @@ public class LobbyManager : MonoBehaviour
 
 	private void Update()
 	{
+		List<Guid> guids = new List<Guid>(playerDatas.Keys);
 
+		if (guids == null)
+			return;
+
+		for (int i = 0; i < spectatorsContent.childCount; i++)
+		{
+			Text text = spectatorsContent.GetChild(i).GetComponent<Text>();
+
+			if (i < playerDatas.Count && i < guids.Count)
+			{
+				PlayerNetData pData = playerDatas[guids[i]];
+
+				//if (playerDatas.TryGetValue(guids[i], out pData))
+				//{
+					
+
+				//}
+				if(pData != null)
+				{
+					text.text = pData.name + "     " + guids[i] + "     " + pData.index;
+				}
+
+			}
+			else
+			{
+				text.text = "";
+			}
+
+		}
 	}
 
 	private void Join(int index)
@@ -147,9 +179,9 @@ public class LobbyManager : MonoBehaviour
 			string sendMsg = "PlayerDisconnected";
 			var pData = playerDatas[guid];
 
-			sendMsg += string.Format("|{0};{1};{2}", guid.ToString(), pData.name, pData.index);
+			sendMsg += string.Format("|{0};{1};{2}", guid, pData.name, pData.index);
 
-			playerDatas.Remove(guid);
+			//playerDatas.Remove(guid);
 
 			Debug.Log("Send message: " + sendMsg);
 			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
@@ -215,7 +247,7 @@ public class LobbyManager : MonoBehaviour
 			{
 				string[] data = args[i].Split(';');
 
-				Guid guid = new Guid(data[0]);
+				Guid guid = Guid.NewGuid() ;
 				int index = int.Parse(data[2]);
 				string name = data[1];
 
@@ -228,11 +260,11 @@ public class LobbyManager : MonoBehaviour
 
 
 				//Might be a reconnected player
-				if (playerDatas.TryGetValue(guid, out playerData))
-				{
-					Debug.Log("same   " + guid);
-					continue;
-				}
+				//if (playerDatas.TryGetValue(guid, out playerData))
+				//{
+				//	Debug.Log("same   " + guid);
+				//	continue;
+				//}
 
 				if (guid == NUClient.guid)
 				{
@@ -253,7 +285,7 @@ public class LobbyManager : MonoBehaviour
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = "222";
 
-			playerDatas.Remove(guid);
+			//playerDatas.Remove(guid);
 		}
 		else if (args[0] == "PlayerJoin") //Player Profile Data
 		{
