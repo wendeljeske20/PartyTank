@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using NUNet;
 using UnityEngine.SceneManagement;
 using Game;
+using UnityEditor;
 
 public class LobbyManager : MonoBehaviour
 {
@@ -49,8 +50,12 @@ public class LobbyManager : MonoBehaviour
 			lobbyPanels[i].joinButton.onClick.AddListener(() => Join(index));
 		}
 
-		//Application.quitting += () => ClientDisconnected();
 		gameObject.SetActive(false);
+	}
+
+	private void OnApplicationQuit()
+	{
+		Disconnect();
 	}
 
 	private void Update()
@@ -110,6 +115,12 @@ public class LobbyManager : MonoBehaviour
 		Debug.Log("DSC AAAAAAA");
 	}
 
+	private void Disconnect()
+	{
+		//Packet packet = new Packet("PlayerDisconnected|");
+		//NUClient.SendReliable(packet);
+	}
+
 	private void Join(int index)
 	{
 		Packet packet = new Packet("PlayerJoin|" + playerName + ";" + index);
@@ -129,10 +140,16 @@ public class LobbyManager : MonoBehaviour
 
 	private void PlayerDisconnectFromServer(Guid guid)
 	{
-		Packet packet = new Packet("PlayerDisconnected|" + guid);
-		NUClient.SendReliable(packet);
 		connectedPlayers.Remove(guid);
-		//Debug.Log("Disconnected");
+		int index = playerDatas[guid].index;
+		lobbyPanels[index].nameText.text = "111";
+
+		playerDatas.Remove(guid);
+
+
+		Packet packet = new Packet("PlayerDisconnected|" + guid, connectedPlayers.ToArray()); ;
+		NUServer.SendReliable(packet);
+		Debug.Log("Disconnected " + guid);
 
 		//GameObject playerObject;
 		//if (playerObjects.TryGetValue(guid, out playerObject))
@@ -158,7 +175,6 @@ public class LobbyManager : MonoBehaviour
 		if (args[0] == "PlayerConnected")
 		{
 			string[] data = args[1].Split(';');
-			//Guid guid = new Guid(data[0]);
 			string name = data[1];
 
 			PlayerNetData playerData = new PlayerNetData();
@@ -183,25 +199,38 @@ public class LobbyManager : MonoBehaviour
 			Debug.Log("Send message: " + sendMsg);
 			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
 
+			sendMsg = "PlayerJoin";
+			foreach (var pData in playerDatas)
+			{
+				if (pData.Value.index != -1)
+					sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.index);
+			}
+
+			Debug.Log("Send message: " + sendMsg);
+
+			NUServer.SendReliable(new Packet(sendMsg, new Guid[] { clientGuid }));
+
 		}
 		else if (args[0] == "PlayerDisconnected")
 		{
 			string[] data = args[1].Split(';');
-			Guid guid = new Guid(data[0]);
-			int index = playerDatas[guid].index;
+			//Guid guid = new Guid(data[0]);
+			int index = playerDatas[clientGuid].index;
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = "111";
 
 			string sendMsg = "PlayerDisconnected";
-			var pData = playerDatas[guid];
+			var pData = playerDatas[clientGuid];
 
-			sendMsg += string.Format("|{0};{1};{2}", guid, pData.name, pData.index);
+			sendMsg += string.Format("|{0};{1};{2}", clientGuid, pData.name, pData.index);
 
-			//playerDatas.Remove(guid);
+			playerDatas.Remove(clientGuid);
 
 			Debug.Log("Send message: " + sendMsg);
-			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
+
+			List<Guid> guids = new List<Guid>(playerDatas.Keys);
+			NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
 
 		}
 		else if (args[0] == "PlayerJoin")
@@ -303,11 +332,12 @@ public class LobbyManager : MonoBehaviour
 			string[] data = args[1].Split(';');
 
 			Guid guid = new Guid(data[0]);
-			int index = int.Parse(data[2]);
-			string name = data[1]; ;
+			//string name = data[1];
+			int index = playerDatas[guid].index; //int.Parse(data[2]);
+
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
-			playerPanel.nameText.text = "222";
+			playerPanel.nameText.text = "111";
 
 			//playerDatas.Remove(guid);
 		}
