@@ -141,7 +141,7 @@ public class NetworkAppManager : MonoBehaviour
 			inputField.Select();
 			return;
 		}
-		Packet spawnPacket = new Packet("Spw|" + inputField.text);
+		Packet spawnPacket = new Packet("Spawn|" + inputField.text);
 		NUClient.SendReliable(spawnPacket);
 		guiCanvas.SetActive(false);
 	}
@@ -153,7 +153,7 @@ public class NetworkAppManager : MonoBehaviour
 
 		string msg = packet.GetMessageData();
 		string[] args = msg.Split('|');
-		if (args[0] == "Spw")
+		if (args[0] == "Spawn")
 		{
 			//Spawn Player on Random Position
 			Vector3 spwnPos = Vector3.right * Random.Range(-5.0f, 5.0f);

@@ -20,7 +20,7 @@ public class LobbyManager : MonoBehaviour
 	//public PlayerLobbyPanel playerPanelPrefab;
 	public PlayerLobbyPanel[] lobbyPanels;
 
-	public Dictionary<Guid, PlayerLobbyPanel> playerLobbyPanels = new Dictionary<Guid, PlayerLobbyPanel>();
+	public static Dictionary<Guid, PlayerNetData> playerDatas = new Dictionary<Guid, PlayerNetData>();
 
 	private void Awake()
 	{
@@ -57,9 +57,22 @@ public class LobbyManager : MonoBehaviour
 
 	private void Join(int index)
 	{
-		Packet packet = new Packet("PlayerJoin|" + playerName + "zzz" + ";" + index);
+		Packet packet = new Packet("PlayerJoin|" + playerName + "xxx" + ";" + index);
 		NUClient.SendReliable(packet);
 	}
+
+	public void SendStartMatch()
+	{
+		Packet packet = new Packet("StartMatch");
+		NUClient.SendReliable(packet);
+	}
+
+	private void StartMatch()
+	{
+		SceneManager.LoadScene(1);
+	}
+
+
 
 	private void ClientConnected(Guid guid)
 	{
@@ -94,9 +107,9 @@ public class LobbyManager : MonoBehaviour
 		if (args[0] == "PlayerConnected")
 		{
 			string sendMsg = "PlayerConnected";
-			foreach (var panel in playerLobbyPanels)
+			foreach (var pData in playerDatas)
 			{
-				sendMsg += string.Format("|{0};{1};{2}", panel.Key.ToString(), panel.Value.nameText.text, panel.Value.index);
+				sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.index);
 			}
 
 			Debug.Log("Send message: " + sendMsg);
@@ -111,7 +124,6 @@ public class LobbyManager : MonoBehaviour
 			string name = data[0];
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
-			playerPanel.index = index;
 			playerPanel.nameText.text = name;
 
 
@@ -120,14 +132,16 @@ public class LobbyManager : MonoBehaviour
 
 			}
 
-			playerLobbyPanels.Add(guid, playerPanel);
+			PlayerNetData playerData = new PlayerNetData();
+			playerData.name = name;
+			playerData.index = index;
 
-
+			playerDatas.Add(guid, playerData);
 
 			string sendMsg = "PlayerJoin";
-			foreach (var panel in playerLobbyPanels)
+			foreach (var pData in playerDatas)
 			{
-				sendMsg += string.Format("|{0};{1};{2}", panel.Key.ToString(), panel.Value.nameText.text, panel.Value.index);
+				sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.index);
 			}
 
 			Debug.Log("Send message: " + sendMsg);
@@ -135,7 +149,12 @@ public class LobbyManager : MonoBehaviour
 
 			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
 		}
-
+		else if (args[0] == "StartMatch")
+		{
+			List<Guid> guids = new List<Guid>(connectedPlayers);
+			NUServer.SendReliable(new Packet("StartMatch", guids.ToArray()));
+			StartMatch();
+		}
 
 		if (packet.id >= 0)
 		{
@@ -163,11 +182,15 @@ public class LobbyManager : MonoBehaviour
 				string name = data[1];
 
 				PlayerLobbyPanel playerPanel = lobbyPanels[index];
-				playerPanel.index = index;
 				playerPanel.nameText.text = name;
 
+				PlayerNetData playerData = new PlayerNetData();
+				playerData.name = name;
+				playerData.index = index;
+
+				
 				//Might be a reconnected player
-				if (playerLobbyPanels.TryGetValue(guid, out playerPanel))
+				if (playerDatas.TryGetValue(guid, out playerData))
 				{
 					Debug.Log("same   " + guid);
 					continue;
@@ -178,7 +201,7 @@ public class LobbyManager : MonoBehaviour
 					//playerObj.AddComponent<PlayerBehaviour>();
 				}
 
-				playerLobbyPanels.Add(guid, playerPanel);
+				playerDatas.Add(guid, playerData);
 			}
 		}
 		else if (args[0] == "PlayerJoin") //Player Profile Data
@@ -192,12 +215,15 @@ public class LobbyManager : MonoBehaviour
 				string name = data[1]; ;
 
 				PlayerLobbyPanel playerPanel = lobbyPanels[index];
-
-				playerPanel.index = index;
 				playerPanel.nameText.text = name;
 
+				PlayerNetData playerData = new PlayerNetData();
+				playerData.name = name;
+				playerData.index = index;
+
+
 				//Might be a reconnected player
-				if (playerLobbyPanels.TryGetValue(guid, out playerPanel))
+				if (playerDatas.TryGetValue(guid, out playerData))
 				{
 					Debug.Log("same   " + guid);
 					continue;
@@ -210,8 +236,12 @@ public class LobbyManager : MonoBehaviour
 					//playerObj.AddComponent<PlayerBehaviour>();
 				}
 
-				playerLobbyPanels.Add(guid, playerPanel);
+				playerDatas.Add(guid, playerData);
 			}
+		}
+		else if (args[0] == "StartMatch")
+		{
+			StartMatch();
 		}
 		else if (args[0] == "Sta") //State Data
 		{
@@ -233,9 +263,6 @@ public class LobbyManager : MonoBehaviour
 		}
 	}
 
-	public void StartMatch()
-	{
-		SceneManager.LoadScene(1);
-	}
+
 
 }
