@@ -75,6 +75,7 @@ public class NetworkAppManager : MonoBehaviour
 	public void Spawn()
 	{
 		Packet spawnPacket = new Packet("Spawn|" + LobbyManager.playerName);
+		Debug.Log(LobbyManager.playerDatas[NUClient.guid].name);
 		NUClient.SendReliable(spawnPacket);
 	}
 
