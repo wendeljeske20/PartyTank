@@ -382,13 +382,6 @@ public class LobbyManager : MonoBehaviour
 
 				playerDatas[guid].index = index;
 
-				//PlayerNetData playerData = new PlayerNetData();
-				//playerData.name = name;
-				//playerData.index = index;
-
-
-
-
 				//Might be a reconnected player
 				//if (playerDatas.TryGetValue(guid, out playerData))
 				//{
@@ -414,15 +407,6 @@ public class LobbyManager : MonoBehaviour
 		else if (args[0] == "StartMatch")
 		{
 			StartMatch();
-		}
-		else if (args[0] == "Dsc")
-		{
-			//Guid guid = new Guid(args[1]);
-			//GameObject playerObj;
-			//if (playerObjects.TryGetValue(guid, out playerObj))
-			//{
-			//	playerObj.SetActive(false);
-			//}
 		}
 
 		if (packet.id >= 0)

@@ -167,15 +167,16 @@ public class NetworkAppManager : MonoBehaviour
 		{
 			for (int i = 1; i < args.Length; i++)
 			{
-				string[] plData = args[i].Split(';');
-				Guid guid = new Guid(plData[0]);
+				string[] data = args[i].Split(';');
+				Guid guid = new Guid(data[0]);
+				string name = data[1];
 
 				GameObject playerObj;
 
 				//Might be a reconnected player
 				if (playerObjects.TryGetValue(guid, out playerObj))
 				{
-					playerObj.SetActive(true);
+
 					continue;
 				}
 				int index = LobbyManager.playerDatas[guid].index;
@@ -189,8 +190,8 @@ public class NetworkAppManager : MonoBehaviour
 				{
 					playerObj.AddComponent<PlayerBehaviour>();
 				}
-				playerObj.name = "Player (" + plData[1] + ")";
-				playerObj.GetComponentInChildren<Text>().text = plData[1];
+				playerObj.name = "Player (" + name + ")";
+				playerObj.GetComponentInChildren<Text>().text = name;
 				playerObjects.Add(guid, playerObj);
 			}
 		}
@@ -198,19 +199,19 @@ public class NetworkAppManager : MonoBehaviour
 		{
 			for (int i = 1; i < args.Length; i++)
 			{
-				string[] plData = args[i].Split(';');
-				Guid guid = new Guid(plData[0]);
+				string[] data = args[i].Split(';');
+				Guid guid = new Guid(data[0]);
 				GameObject playerObj;
 				if (playerObjects.TryGetValue(guid, out playerObj))
 				{
-					string[] pos = plData[1].Split(':');
+					string[] pos = data[1].Split(':');
 					Vector3 vPos = new Vector3(
 						float.Parse(pos[0]),
 						float.Parse(pos[1]),
 						float.Parse(pos[2])
 						);
 					playerObj.transform.position = vPos;
-					string[] rot = plData[2].Split(':');
+					string[] rot = data[2].Split(':');
 					Quaternion qRot = new Quaternion(
 						float.Parse(rot[0]),
 						float.Parse(rot[1]),
