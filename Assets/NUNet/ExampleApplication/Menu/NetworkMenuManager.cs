@@ -104,7 +104,8 @@ namespace Game
 		{
 			NUServer.Start(NUUtilities.ListIPv4Addresses()[0]);
 			NUClient.Connect(NUUtilities.ListIPv4Addresses()[0]);
-			//lobbyManager.gameObject.SetActive(true);
+			lobbyManager.readyButton.gameObject.SetActive(true);
+			LobbyManager.isHost = true;
 		}
 
 		public void ServerFound(BroadcastPacket brdPacket)

@@ -42,6 +42,13 @@ public static class Utility
 		return "<color=" + hex + ">" + text + "</color>";
 	}
 
+	public static Color HtmlToColor(string hex)
+	{
+		Color newColor = Color.yellow;
+		ColorUtility.TryParseHtmlString(hex, out newColor);
+		return newColor;
+	}
+
 	public static IEnumerator HighlightMesh(Renderer[] renderers, float duration)
 	{
 		Color[] defaultColors = new Color[renderers.Length];
