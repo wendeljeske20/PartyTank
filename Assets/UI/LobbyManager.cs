@@ -248,7 +248,11 @@ public class LobbyManager : MonoBehaviour
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = name;
-			playerPanel.nameText.color = Utility.HtmlToColor("#0099FF");
+			if (guid == NUClient.guid)
+			{
+				playerPanel.nameText.color = Utility.HtmlToColor("#0099FF");
+			}
+
 			playerPanel.joinButton.gameObject.SetActive(false);
 
 			playerDatas[guid].index = index;
@@ -370,7 +374,10 @@ public class LobbyManager : MonoBehaviour
 
 				PlayerLobbyPanel playerPanel = lobbyPanels[index];
 				playerPanel.nameText.text = name;
-				playerPanel.nameText.color = Utility.HtmlToColor("#0099FF");
+				if (guid == NUClient.guid)
+				{
+					playerPanel.nameText.color = Utility.HtmlToColor("#0099FF");
+				}
 				playerPanel.joinButton.gameObject.SetActive(false);
 
 				playerDatas[guid].index = index;

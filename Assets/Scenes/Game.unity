@@ -150,6 +150,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6260819cdf0dbe542a4893c70bd3b0dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnPositions:
+  - {fileID: 288231996}
+  - {fileID: 1372230570}
+  - {fileID: 1340248946}
+  - {fileID: 1781957116}
   playerClientPrefab: {fileID: 1100795257424602, guid: 94181b999cf6de44e8ab0e5c1175bdc0,
     type: 3}
   playerServerPrefab: {fileID: 1743571716167978, guid: 9780f051a497e7f48bfb5a5ad9e641a2,
@@ -1062,13 +1067,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 802945339}
-  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 5, z: -10}
+  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
+  m_LocalPosition: {x: 0, y: 11.85, z: -9.74}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
 --- !u!114 &802945344
 MonoBehaviour:
   m_ObjectHideFlags: 0

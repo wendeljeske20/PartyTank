@@ -14,6 +14,9 @@ using UnityEngine.SceneManagement;
 
 public class NetworkAppManager : MonoBehaviour
 {
+	[SerializeField]
+	private List<Transform> spawnPositions;
+
 	private Dictionary<Guid, GameObject> playerObjects = new Dictionary<Guid, GameObject>();
 
 	[SerializeField]
@@ -89,10 +92,12 @@ public class NetworkAppManager : MonoBehaviour
 
 		if (args[0] == "Spawn")
 		{
-			//Spawn Player on Random Position
-			Vector3 spawnPosition = Vector3.right * Random.Range(-5.0f, 5.0f);
+			int index = LobbyManager.playerDatas[guid].index;
 
-			GameObject playerObj = GameObject.Instantiate(playerServerPrefab, spawnPosition, Quaternion.identity);
+			Debug.Log("INDEX1  " + index);
+			GameObject playerObj = GameObject.Instantiate(playerServerPrefab,
+				spawnPositions[index].position,
+				spawnPositions[index].rotation);
 
 			if (NUClient.connected && guid == NUClient.guid) //Is Server Player
 			{
@@ -173,8 +178,13 @@ public class NetworkAppManager : MonoBehaviour
 					playerObj.SetActive(true);
 					continue;
 				}
+				int index = LobbyManager.playerDatas[guid].index;
+				Debug.Log("INDEX2  " + index);
 
-				playerObj = GameObject.Instantiate(playerClientPrefab);
+				playerObj = GameObject.Instantiate(playerClientPrefab,
+					spawnPositions[index].position,
+					spawnPositions[index].rotation);
+
 				if (guid == NUClient.guid)
 				{
 					playerObj.AddComponent<PlayerBehaviour>();
