@@ -7,7 +7,7 @@ using NUNet;
 public class PlayerBehaviour : MonoBehaviour
 {
 
-	public float moveSpeed = 30;
+	public float moveSpeed = 10;
 
 	public float rotationSpeed = 5;
 
@@ -24,19 +24,20 @@ public class PlayerBehaviour : MonoBehaviour
 
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			NUClient.SendReliable(new Packet("Jmp"));
+			// NUClient.SendReliable(new Packet("Jmp"));
 		}
 
 		//Stream Player Input
-		Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-		//input *= (Time.deltaTime * moveSpeed);
+		Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * moveSpeed;
+		//input *= Time.deltaTime;
+		//GetComponent<Rigidbody>().velocity = input;
 
 		string inpMsg = "Inp|";
 		inpMsg += input.x.ToString("R") + ":" + input.y.ToString("R") + ":" + input.z.ToString("R");
 		Packet inpPacket = new Packet(inpMsg);
 		NUClient.SendUnreliable(inpPacket);
 
-		LookAtMouse();
+		//LookAtMouse();
 	}
 
 	private void LookAtMouse()

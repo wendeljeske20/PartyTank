@@ -18,6 +18,8 @@ public class NetworkAppManager : MonoBehaviour
 	private List<Transform> spawnPositions;
 
 	private Dictionary<Guid, GameObject> playerObjects = new Dictionary<Guid, GameObject>();
+	//private List<Guid> playerGuids = new List<Guid>();
+	//private List<GameObject> playerObjects = new List<GameObject>();
 
 	[SerializeField]
 	private GameObject playerClientPrefab;
