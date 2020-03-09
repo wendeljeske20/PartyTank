@@ -126,6 +126,8 @@ public class NetworkAppManager : MonoBehaviour
 					float.Parse(inpMsg[1]),
 					float.Parse(inpMsg[2])
 					);
+				//Rigidbody rb = playerObj.GetComponentInChildren<Rigidbody>();
+				//rb.velocity = input;
 				playerObj.transform.position += input;
 			}
 		}
