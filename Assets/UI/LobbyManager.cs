@@ -88,7 +88,7 @@ public class LobbyManager : MonoBehaviour
 			{
 				PlayerNetData pData = playerDatas[guids[i]];
 
-				text.text = pData.name + "     " + guids[i] + "     " + pData.index;
+				text.text = pData.name + "     " + guids[i] + "     " + pData.lobbyIndex;
 			}
 			else
 			{
@@ -149,7 +149,7 @@ public class LobbyManager : MonoBehaviour
 	private void PlayerDisconnectFromServer(Guid guid)
 	{
 		connectedPlayers.Remove(guid);
-		int index = playerDatas[guid].index;
+		int index = playerDatas[guid].lobbyIndex;
 		lobbyPanels[index].nameText.text = "111";
 
 		playerDatas.Remove(guid);
@@ -175,7 +175,7 @@ public class LobbyManager : MonoBehaviour
 
 			PlayerNetData playerData = new PlayerNetData();
 			playerData.name = name;
-			playerData.index = -1;
+			playerData.lobbyIndex = -1;
 
 			//Debug.Log("guid   " + clientGuid);
 			if (playerDatas.ContainsKey(guid))
@@ -189,7 +189,7 @@ public class LobbyManager : MonoBehaviour
 			string sendMsg = "PlayerConnected";
 			foreach (var pData in playerDatas)
 			{
-				sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.index);
+				sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.lobbyIndex);
 			}
 
 			Debug.Log("Send message: " + sendMsg);
@@ -198,8 +198,8 @@ public class LobbyManager : MonoBehaviour
 			sendMsg = "PlayerJoin";
 			foreach (var pData in playerDatas)
 			{
-				if (pData.Value.index != -1)
-					sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.index);
+				if (pData.Value.lobbyIndex != -1)
+					sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.lobbyIndex);
 			}
 
 			Debug.Log("Send message: " + sendMsg);
@@ -211,7 +211,7 @@ public class LobbyManager : MonoBehaviour
 		{
 			string[] data = args[1].Split(';');
 			//Guid guid = new Guid(data[0]);
-			int index = playerDatas[guid].index;
+			int index = playerDatas[guid].lobbyIndex;
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = "111";
@@ -221,7 +221,7 @@ public class LobbyManager : MonoBehaviour
 			string sendMsg = "PlayerDisconnected";
 			var pData = playerDatas[guid];
 
-			sendMsg += string.Format("|{0};{1};{2}", guid, pData.name, pData.index);
+			sendMsg += string.Format("|{0};{1};{2}", guid, pData.name, pData.lobbyIndex);
 
 			playerDatas.Remove(guid);
 
@@ -238,7 +238,7 @@ public class LobbyManager : MonoBehaviour
 			string name = data[0];
 			int index = int.Parse(data[1]);
 
-			int lastIndex = playerDatas[guid].index;
+			int lastIndex = playerDatas[guid].lobbyIndex;
 			if (lastIndex != -1)
 			{
 				lobbyPanels[lastIndex].nameText.text = "111";
@@ -255,7 +255,7 @@ public class LobbyManager : MonoBehaviour
 
 			playerPanel.joinButton.gameObject.SetActive(false);
 
-			playerDatas[guid].index = index;
+			playerDatas[guid].lobbyIndex = index;
 
 
 			if (NUClient.connected && guid == NUClient.guid) //Is Server Player
@@ -268,8 +268,8 @@ public class LobbyManager : MonoBehaviour
 			string sendMsg = "PlayerJoin";
 			foreach (var pData in playerDatas)
 			{
-				if (pData.Value.index != -1)
-					sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.index);
+				if (pData.Value.lobbyIndex != -1)
+					sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.lobbyIndex);
 			}
 
 			Debug.Log("Send message: " + sendMsg);
@@ -314,7 +314,7 @@ public class LobbyManager : MonoBehaviour
 
 				PlayerNetData playerData = new PlayerNetData();
 				playerData.name = name;
-				playerData.index = index;
+				playerData.lobbyIndex = index;
 
 				//Might be a reconnected player
 				//if (playerDatas.TryGetValue(guid, out playerData))
@@ -344,7 +344,7 @@ public class LobbyManager : MonoBehaviour
 
 			Guid guid = new Guid(data[0]);
 			//string name = data[1];
-			int index = playerDatas[guid].index; //int.Parse(data[2]);
+			int index = playerDatas[guid].lobbyIndex; //int.Parse(data[2]);
 
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
@@ -364,7 +364,7 @@ public class LobbyManager : MonoBehaviour
 				int index = int.Parse(data[2]);
 				string name = data[1];
 
-				int lastIndex = playerDatas[guid].index;
+				int lastIndex = playerDatas[guid].lobbyIndex;
 				if (lastIndex != -1)
 				{
 					lobbyPanels[lastIndex].nameText.text = "111";
@@ -380,7 +380,7 @@ public class LobbyManager : MonoBehaviour
 				}
 				playerPanel.joinButton.gameObject.SetActive(false);
 
-				playerDatas[guid].index = index;
+				playerDatas[guid].lobbyIndex = index;
 
 				//Might be a reconnected player
 				//if (playerDatas.TryGetValue(guid, out playerData))

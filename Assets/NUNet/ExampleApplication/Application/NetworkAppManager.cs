@@ -94,27 +94,29 @@ public class NetworkAppManager : MonoBehaviour
 
 		if (args[0] == "Spawn")
 		{
-			int index = LobbyManager.playerDatas[guid].index;
+			int index = LobbyManager.playerDatas[guid].lobbyIndex;
 
-			Debug.Log("INDEX1  " + index);
-			GameObject playerObj = GameObject.Instantiate(playerServerPrefab,
-				spawnPositions[index].position,
-				spawnPositions[index].rotation);
-
-			if (NUClient.connected && guid == NUClient.guid) //Is Server Player
+			if (index != -1)
 			{
-				playerObj.AddComponent<PlayerBehaviour>();
+				Debug.Log("INDEX1  " + index);
+				GameObject playerObj = GameObject.Instantiate(playerServerPrefab,
+					spawnPositions[index].position,
+					spawnPositions[index].rotation);
+
+				if (NUClient.connected && guid == NUClient.guid) //Is Server Player
+				{
+					playerObj.AddComponent<PlayerBehaviour>();
+				}
+
+				playerObj.name = "Player (" + args[1] + ")";
+				playerObj.GetComponentInChildren<Text>().text = args[1];
+				playerObjects.Add(guid, playerObj);
 			}
-
-			playerObj.name = "Player (" + args[1] + ")";
-			playerObj.GetComponentInChildren<Text>().text = args[1];
-			playerObjects.Add(guid, playerObj);
-
 			string playerData = GetPlayersData();
 
-			List<Guid> guids = new List<Guid>(playerObjects.Keys);
+			List<Guid> guids = LobbyManager.connectedPlayers;
 			NUServer.SendReliable(new Packet(playerData, guids.ToArray()));
-			NUServer.SendReliable(new Packet(GetStateMsg(), new Guid[] { guid }));
+			NUServer.SendReliable(new Packet(GetStateMsg(), guids.ToArray()));
 		}
 		else if (args[0] == "Inp")
 		{
@@ -130,7 +132,6 @@ public class NetworkAppManager : MonoBehaviour
 					);
 				Rigidbody rb = playerObj.GetComponent<Rigidbody>();
 				rb.velocity = input;
-				//playerObj.transform.position += input;
 			}
 		}
 		else if (args[0] == "Jmp")
@@ -183,7 +184,7 @@ public class NetworkAppManager : MonoBehaviour
 
 					continue;
 				}
-				int index = LobbyManager.playerDatas[guid].index;
+				int index = LobbyManager.playerDatas[guid].lobbyIndex;
 				Debug.Log("INDEX2  " + index);
 
 				playerObj = GameObject.Instantiate(playerClientPrefab,

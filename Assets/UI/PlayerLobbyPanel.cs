@@ -16,5 +16,5 @@ public class PlayerNetData
 {
 	public string name;
 	//public bool ready;
-	public int index;
+	public int lobbyIndex;
 }
