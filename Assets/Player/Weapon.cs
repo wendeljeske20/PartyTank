@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
+using NUNet;
 
 public class Weapon : MonoBehaviour
 {
@@ -26,15 +27,25 @@ public class Weapon : MonoBehaviour
 	{
 		audioSource = GetComponent<AudioSource>();
 	}
+
 	protected virtual void Update()
 	{
 		nextAttackInterval += Time.deltaTime;
 	}
+
 	public virtual void Attack()
 	{
-
 		if (nextAttackInterval >= attackInterval)
-			Shoot();
+		{
+			SendShoot();
+			nextAttackInterval = 0;
+		}
+	}
+
+	public void SendShoot()
+	{
+		string msg = "Shoot|";
+		NUClient.SendReliable(new Packet(msg));
 	}
 
 	public virtual void Shoot()

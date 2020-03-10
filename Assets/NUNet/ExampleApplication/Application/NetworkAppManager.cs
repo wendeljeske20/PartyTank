@@ -133,24 +133,17 @@ public class NetworkAppManager : MonoBehaviour
 				player.DecodeTowerRotation(data[1]);
 			}
 		}
-		else if (args[0] == "Jmp")
+		else if (args[0] == "Shoot")
 		{
 			Player player;
 			if (players.TryGetValue(guid, out player))
 			{
-				//Can Jump check
-				RaycastHit hit;
-				Vector3 playerPos = player.transform.position;
-				if (Physics.Raycast(playerPos, Vector3.down, out hit))
-				{
-					if (hit.distance > 0.6f)
-						return;
+				player.weapon.Shoot();
 
-					Rigidbody rb = player.GetComponent<Rigidbody>();
-					rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-					rb.AddForce(Vector3.up * 5.0f, ForceMode.VelocityChange);
-				}
+				string sendMsg = "Shoot|" + guid.ToString();
 
+				List<Guid> guids = LobbyManager.connectedPlayers;
+				NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
 			}
 		}
 
@@ -212,6 +205,17 @@ public class NetworkAppManager : MonoBehaviour
 					player.DecodeRotation(data[2]);
 					player.DecodeTowerRotation(data[3]);
 				}
+			}
+		}
+		else if (args[0] == "Shoot")
+		{
+			string[] data = args[1].Split(';');
+			Guid guid = new Guid(data[0]);
+
+			Player player;
+			if (players.TryGetValue(guid, out player))
+			{
+				player.weapon.Shoot();
 			}
 		}
 		else if (args[0] == "Dsc")

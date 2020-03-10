@@ -3,6 +3,7 @@
 using UnityEngine;
 
 using NUNet;
+using System.Globalization;
 
 public class Player : MonoBehaviour
 {
@@ -31,7 +32,6 @@ public class Player : MonoBehaviour
 		if (Input.GetMouseButton(0))
 		{
 			weapon.Attack();
-			//NUClient.SendReliable(new Packet("Shoot"));
 		}
 	}
 	private void FixedUpdate()
@@ -39,7 +39,11 @@ public class Player : MonoBehaviour
 		if (!NUClient.connected || !isLocal)
 			return;
 
-		string msg = "Inp|" + EncodePositionInput() + ";" + EncodeTowerRotationInput();
+		string msg = string.Format("Inp|{0};{1}",
+			EncodePositionInput(),
+			EncodeTowerRotationInput()
+		);
+
 		NUClient.SendUnreliable(new Packet(msg));
 	}
 
