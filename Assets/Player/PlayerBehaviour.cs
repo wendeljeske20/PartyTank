@@ -15,8 +15,7 @@ public class PlayerBehaviour : MonoBehaviour
 
 	public GameObject tower;
 
-	[HideInInspector]
-	public Rigidbody rb;
+	private Rigidbody rb;
 	private void Awake()
 	{
 		tower = transform.Find("Base/Tower").gameObject;
@@ -44,6 +43,55 @@ public class PlayerBehaviour : MonoBehaviour
 		NUClient.SendUnreliable(inpPacket);
 
 		//LookAt(tower, GetTowerLookDirection());
+	}
+
+	public void SetVelocity(Vector3 velocity)
+	{
+		rb.velocity = velocity;
+	}
+
+	public string EncodePosition()
+	{
+		Vector3 pos = transform.position;
+		return string.Format("{0}:{1}:{2}",
+			pos.x.ToString("R"),
+			pos.y.ToString("R"),
+			pos.z.ToString("R")
+		);
+	}
+
+	public void DecodePosition(string msg)
+	{
+		string[] args = msg.Split(':');
+		Vector3 pos = new Vector3(
+			float.Parse(args[0]),
+			float.Parse(args[1]),
+			float.Parse(args[2])
+		);
+		transform.position = pos;
+	}
+
+	public string EncodeRotation()
+	{
+		Quaternion rot = transform.rotation;
+		return string.Format("{0}:{1}:{2}:{3}",
+			rot.x.ToString("R"),
+			rot.y.ToString("R"),
+			rot.z.ToString("R"),
+			rot.w.ToString("R")
+		);
+	}
+
+	public void DecodeRotation(string msg)
+	{
+		string[] args = msg.Split(':');
+		Quaternion rot = new Quaternion(
+			float.Parse(args[0]),
+			float.Parse(args[1]),
+			float.Parse(args[2]),
+			float.Parse(args[3])
+		);
+		transform.rotation = rot;
 	}
 
 	private Vector3 GetTowerLookDirection()

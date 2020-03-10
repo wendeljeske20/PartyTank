@@ -135,7 +135,7 @@ public class NetworkAppManager : MonoBehaviour
 					float.Parse(inpMsg[1]),
 					float.Parse(inpMsg[2])
 					);
-				player.rb.velocity = input;
+				player.SetVelocity(input);
 			}
 		}
 		else if (args[0] == "Jmp")
@@ -213,21 +213,8 @@ public class NetworkAppManager : MonoBehaviour
 				PlayerBehaviour player;
 				if (players.TryGetValue(guid, out player))
 				{
-					string[] pos = data[1].Split(':');
-					Vector3 vPos = new Vector3(
-						float.Parse(pos[0]),
-						float.Parse(pos[1]),
-						float.Parse(pos[2])
-						);
-					player.transform.position = vPos;
-					string[] rot = data[2].Split(':');
-					Quaternion qRot = new Quaternion(
-						float.Parse(rot[0]),
-						float.Parse(rot[1]),
-						float.Parse(rot[2]),
-						float.Parse(rot[3])
-						);
-					player.transform.rotation = qRot;
+					player.DecodePosition(data[1]);
+					player.DecodeRotation(data[2]);
 				}
 			}
 		}
@@ -277,10 +264,11 @@ public class NetworkAppManager : MonoBehaviour
 		string stateData = "Sta";
 		foreach (var player in players)
 		{
-			Vector3 pos = player.Value.transform.position;
-			stateData += "|" + player.Key.ToString() + ";" + pos.x.ToString("R") + ":" + pos.y.ToString("R") + ":" + pos.z.ToString("R");
-			Quaternion rot = player.Value.transform.rotation;
-			stateData += ";" + rot.x.ToString("R") + ":" + rot.y.ToString("R") + ":" + rot.z.ToString("R") + ":" + rot.w.ToString("R");
+			stateData += string.Format("|{0};{1};{2}", 
+				player.Key.ToString(), 
+				player.Value.EncodePosition(), 
+				player.Value.EncodeRotation()
+			);
 		}
 		return stateData;
 	}
