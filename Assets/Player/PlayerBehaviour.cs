@@ -15,8 +15,6 @@ public class PlayerBehaviour : MonoBehaviour
 
 	public GameObject tower;
 
-	bool onFocus;
-
 	private Rigidbody rb;
 	private void Awake()
 	{
@@ -33,19 +31,13 @@ public class PlayerBehaviour : MonoBehaviour
 		{
 			// NUClient.SendReliable(new Packet("Jmp"));
 		}
-		//if (onFocus)
-		{
-			string msg = "Inp|" + EncodeInput() + ";" + EncodeInputTowerRotation();
-			NUClient.SendUnreliable(new Packet(msg));
-		}
+
+		string msg = "Inp|" + EncodeInput() + ";" + EncodeInputTowerRotation();
+		NUClient.SendUnreliable(new Packet(msg));
+
 
 
 		//LookAt(tower, GetTowerLookDirection());
-	}
-
-	private void OnApplicationFocus(bool focus)
-	{
-		onFocus = focus;
 	}
 
 	public void DecodeVelocity(string msg)
