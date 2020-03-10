@@ -12,9 +12,13 @@ public class PlayerBehaviour : MonoBehaviour
 	public float rotationSpeed = 5;
 
 	public Transform top;
+
+	[HideInInspector]
+	public Rigidbody rb;
 	private void Start()
 	{
 		top = transform.Find("Base/Top");
+		rb = GetComponent<Rigidbody>();
 	}
 
 	private void Update()
