@@ -125,17 +125,12 @@ public class NetworkAppManager : MonoBehaviour
 		}
 		else if (args[0] == "Inp")
 		{
-			string plData = args[1];
+			string[] data = args[1].Split(';');
 			PlayerBehaviour player;
 			if (players.TryGetValue(guid, out player))
 			{
-				string[] inpMsg = plData.Split(':');
-				Vector3 input = new Vector3(
-					float.Parse(inpMsg[0]),
-					float.Parse(inpMsg[1]),
-					float.Parse(inpMsg[2])
-					);
-				player.SetVelocity(input);
+				player.DecodeVelocity(data[0]);
+				player.DecodeTowerRotation(data[1]);
 			}
 		}
 		else if (args[0] == "Jmp")
@@ -215,6 +210,7 @@ public class NetworkAppManager : MonoBehaviour
 				{
 					player.DecodePosition(data[1]);
 					player.DecodeRotation(data[2]);
+					player.DecodeTowerRotation(data[3]);
 				}
 			}
 		}
@@ -264,10 +260,11 @@ public class NetworkAppManager : MonoBehaviour
 		string stateData = "Sta";
 		foreach (var player in players)
 		{
-			stateData += string.Format("|{0};{1};{2}", 
-				player.Key.ToString(), 
-				player.Value.EncodePosition(), 
-				player.Value.EncodeRotation()
+			stateData += string.Format("|{0};{1};{2};{3}",
+				player.Key.ToString(),
+				player.Value.EncodePosition(),
+				player.Value.EncodeRotation(),
+				player.Value.EncodeTowerRotation()
 			);
 		}
 		return stateData;

@@ -15,6 +15,8 @@ public class PlayerBehaviour : MonoBehaviour
 
 	public GameObject tower;
 
+	bool onFocus;
+
 	private Rigidbody rb;
 	private void Awake()
 	{
@@ -31,16 +33,24 @@ public class PlayerBehaviour : MonoBehaviour
 		{
 			// NUClient.SendReliable(new Packet("Jmp"));
 		}
+		//if (onFocus)
+		{
+			string msg = "Inp|" + EncodeInput() + ";" + EncodeInputTowerRotation();
+			NUClient.SendUnreliable(new Packet(msg));
+		}
 
-		string msg = "Inp|" + EncodeInput();
-		NUClient.SendUnreliable(new Packet(msg));
 
 		//LookAt(tower, GetTowerLookDirection());
 	}
 
-	public void SetVelocity(Vector3 velocity)
+	private void OnApplicationFocus(bool focus)
 	{
-		rb.velocity = velocity;
+		onFocus = focus;
+	}
+
+	public void DecodeVelocity(string msg)
+	{
+		rb.velocity = NetUtility.DecodeVector(msg);
 	}
 
 	private string EncodeInput()
@@ -71,6 +81,14 @@ public class PlayerBehaviour : MonoBehaviour
 	public string EncodeTowerRotation()
 	{
 		return NetUtility.EncodeQuaternion(tower.transform.rotation);
+	}
+
+	public string EncodeInputTowerRotation()
+	{
+		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(GetTowerLookDirection().x, 0, GetTowerLookDirection().z));
+
+		Quaternion rotation = Quaternion.Slerp(tower.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+		return NetUtility.EncodeQuaternion(rotation);
 	}
 
 	public void DecodeTowerRotation(string msg)

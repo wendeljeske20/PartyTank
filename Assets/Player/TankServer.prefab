@@ -160,9 +160,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
-  rotationSpeed: 5
+  rotationSpeed: 15
+  isLocal: 0
   tower: {fileID: 0}
-  rb: {fileID: 0}
 --- !u!65 &8251281292997106643
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -204,9 +204,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
-  rotationSpeed: 5
+  rotationSpeed: 15
+  isLocal: 0
   tower: {fileID: 0}
-  rb: {fileID: 0}
 --- !u!1 &2849456834937759845
 GameObject:
   m_ObjectHideFlags: 0
