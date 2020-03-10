@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class LookAtCam : MonoBehaviour
 {
-    [SerializeField]
-    Camera cam;
+    private Camera cam;
 
     private void Awake()
     {
@@ -18,6 +17,5 @@ public class LookAtCam : MonoBehaviour
         Vector3 toCam = cam.transform.position - transform.position;
         toCam.y = 0;
         transform.rotation = Quaternion.LookRotation(-toCam, Vector3.up);
-        transform.position = transform.parent.position + Vector3.up * 0.85f;
     }
 }

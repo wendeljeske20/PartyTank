@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
 
 	public GameObject tower;
 
-	public GameObject cannonMuzzle;
+	public Weapon weapon;
 
 	private Rigidbody rb;
 	private void Awake()
@@ -28,9 +28,9 @@ public class Player : MonoBehaviour
 		if (!NUClient.connected || !isLocal)
 			return;
 
-		if (Input.GetMouseButtonDown(0))
+		if (Input.GetMouseButton(0))
 		{
-
+			weapon.Attack();
 			//NUClient.SendReliable(new Packet("Shoot"));
 		}
 	}

@@ -4,74 +4,77 @@ using UnityEngine;
 using NaughtyAttributes;
 using System;
 
-namespace Game
+public class Projectile : MonoBehaviour
 {
-	public abstract class Projectile : MonoBehaviour
+	[BoxGroup("Properties")]
+	public Team team;
+
+	[BoxGroup("Properties")]
+	public float moveSpeed;
+
+	[BoxGroup("Properties")]
+	public int damage;
+
+	[HideInInspector]
+	public Rigidbody rb;
+
+	//[BoxGroup("Properties")]
+	//public TrajectoryType trajectoryType;
+
+	public Action OnHit;
+
+	public bool canDestroy;
+
+	Vector3 spawnPosition;
+
+	public IDamagable hittedDamagable;
+
+	private float timer;
+
+	private void Awake()
 	{
-		[BoxGroup("Properties")]
-		public Team team;
+		rb = GetComponent<Rigidbody>();
+	}
 
-		[BoxGroup("Properties")]
-		public float moveSpeed;
+	protected virtual void Start()
+	{
+		spawnPosition = transform.position;
+	}
 
-		[BoxGroup("Properties")]
-		public int damage;
+	protected virtual void Update()
+	{
+		//float distance = (transform.position - spawnPosition).sqrMagnitude;
 
-		private Rigidbody rb;
+		//if (distance >= attackRange * attackRange)
+		//{
+		//	ToDestroy();
+		//}
+		timer += Time.deltaTime;
 
-		//[BoxGroup("Properties")]
-		//public TrajectoryType trajectoryType;
+		//if (timer > 0.05f)
+		canDestroy = true;
+	}
+	public void ToDestroy()
+	{
+		Destroy(gameObject);
+		OnHit?.Invoke();
 
-		public Action OnHit;
+	}
 
-		public bool canDestroy;
+	protected void OnTriggerEnter(Collider other)
+	{
+		if (!canDestroy)
+			return;
 
-		Vector3 spawnPosition;
+		IDamagable damagable = other.GetComponent<IDamagable>();
 
-		public IDamagable hittedDamagable;
+		if (damagable == null || hittedDamagable == damagable || team == damagable.team)
+			return;
 
-		private float timer;
-
-		protected virtual void Start()
-		{
-			rb = GetComponent<Rigidbody>();
-			spawnPosition = transform.position;
-		}
-
-		protected virtual void Update()
-		{
-			//float distance = (transform.position - spawnPosition).sqrMagnitude;
-
-			//if (distance >= attackRange * attackRange)
-			//{
-			//	ToDestroy();
-			//}
-			timer += Time.deltaTime;
-
-			//if (timer > 0.05f)
-				canDestroy = true;
-		}
-		public void ToDestroy()
-		{
-			Destroy(gameObject);
-			OnHit?.Invoke();
-
-		}
-
-		protected void OnTriggerEnter(Collider other)
-		{
-			if (!canDestroy)
-				return;
-
-			IDamagable damagable = other.GetComponent<IDamagable>();
-
-			if (damagable == null || hittedDamagable == damagable || team == damagable.team)
-				return;
-
-			damagable.TakeDamage(damage);
-			hittedDamagable = damagable;
-			ToDestroy();
-		}
+		damagable.TakeDamage(damage);
+		hittedDamagable = damagable;
+		ToDestroy();
 	}
 }
+
 

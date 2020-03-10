@@ -112,7 +112,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97f6e627d91600141bb3c5f79fcdc271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
 --- !u!1 &2964037554396087625
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,7 +162,7 @@ MonoBehaviour:
   rotationSpeed: 5
   isLocal: 0
   tower: {fileID: 2964037555390674508}
-  cannonMuzzle: {fileID: 5183488172329571941}
+  weapon: {fileID: 9120322163283799434}
 --- !u!65 &8251281292997106643
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -282,6 +281,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2964037555399716469}
+  - component: {fileID: 9120322163283799434}
   - component: {fileID: 2964037555399716474}
   - component: {fileID: 2964037555399716475}
   m_Layer: 0
@@ -306,6 +306,25 @@ Transform:
   m_Father: {fileID: 2964037555390674547}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9120322163283799434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2964037555399716470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1280dd81ab9daad47b32e08cf9954985, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  team: 0
+  muzzle: {fileID: 5183488172329571941}
+  projectilePrefab: {fileID: 332656174168820290, guid: ad7d4af1ca32a2e4e94c4a3807cf06c9,
+    type: 3}
+  attackInterval: 0.2
+  projectileSpeed: 5
+  damage: 10
 --- !u!33 &2964037555399716474
 MeshFilter:
   m_ObjectHideFlags: 0
