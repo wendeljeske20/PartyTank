@@ -103,16 +103,21 @@ public class NetworkAppManager : MonoBehaviour
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
-				if (NUClient.connected && guid == NUClient.guid) //Is Server Player
+				if (!NUClient.connected || guid != NUClient.guid) //Is Server Player
 				{
-					playerObj.AddComponent<PlayerBehaviour>();
+					Destroy(playerObj.GetComponent<PlayerBehaviour>());
 				}
 
 				playerObj.name = "Player (" + args[1] + ")";
 				playerObj.GetComponentInChildren<Text>().text = args[1];
 				playerObjects.Add(guid, playerObj);
 			}
-			string playerData = GetPlayersData();
+
+			string playerData = "Spawn";
+			foreach (var player in playerObjects)
+			{
+				playerData += "|" + player.Key.ToString() + ";" + player.Value.name;
+			}
 
 			List<Guid> guids = LobbyManager.connectedPlayers;
 			NUServer.SendReliable(new Packet(playerData, guids.ToArray()));
@@ -168,7 +173,7 @@ public class NetworkAppManager : MonoBehaviour
 
 		string msg = packet.GetMessageData();
 		string[] args = msg.Split('|');
-		if (args[0] == "Prs") //Player Profile Data
+		if (args[0] == "Spawn") //Player Profile Data
 		{
 			for (int i = 1; i < args.Length; i++)
 			{
@@ -191,9 +196,9 @@ public class NetworkAppManager : MonoBehaviour
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
-				if (guid == NUClient.guid)
+				if (guid != NUClient.guid)
 				{
-					playerObj.AddComponent<PlayerBehaviour>();
+					Destroy(playerObj.GetComponent<PlayerBehaviour>());
 				}
 				playerObj.name = "Player (" + name + ")";
 				playerObj.GetComponentInChildren<Text>().text = name;
@@ -266,17 +271,6 @@ public class NetworkAppManager : MonoBehaviour
 
 		NUServer.SendReliable(new Packet("Dsc|" + guid, NUServer.GetConnectedClients()));
 		LobbyManager.connectedPlayers.Remove(guid);
-	}
-
-	private string GetPlayersData()
-	{
-		string playerData = "Prs";
-		foreach (var player in playerObjects)
-		{
-			Vector3 pos = player.Value.transform.position;
-			playerData += "|" + player.Key.ToString() + ";" + player.Value.name;
-		}
-		return playerData;
 	}
 
 	private string GetStateMsg()

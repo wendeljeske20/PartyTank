@@ -41,7 +41,7 @@ public class PlayerBehaviour : MonoBehaviour
 		Packet inpPacket = new Packet(inpMsg);
 		NUClient.SendUnreliable(inpPacket);
 
-		LookAt(tower, GetTowerLookDirection());
+		//LookAt(tower, GetTowerLookDirection());
 	}
 
 	private Vector3 GetTowerLookDirection()
