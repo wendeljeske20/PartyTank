@@ -11,11 +11,13 @@ public class PlayerBehaviour : MonoBehaviour
 
 	public float rotationSpeed = 5;
 
+	public bool isLocal;
+
 	public GameObject tower;
 
 	[HideInInspector]
 	public Rigidbody rb;
-	private void Start()
+	private void Awake()
 	{
 		tower = transform.Find("Base/Tower").gameObject;
 		rb = GetComponent<Rigidbody>();
@@ -23,7 +25,7 @@ public class PlayerBehaviour : MonoBehaviour
 
 	private void Update()
 	{
-		if (!NUClient.connected)
+		if (!NUClient.connected || !isLocal)
 			return;
 
 		if (Input.GetKeyDown(KeyCode.Space))
