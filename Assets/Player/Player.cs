@@ -4,7 +4,7 @@ using UnityEngine;
 
 using NUNet;
 
-public class PlayerBehaviour : MonoBehaviour
+public class Player : MonoBehaviour
 {
 
 	public float moveSpeed = 10;
@@ -15,10 +15,11 @@ public class PlayerBehaviour : MonoBehaviour
 
 	public GameObject tower;
 
+	public GameObject cannonMuzzle;
+
 	private Rigidbody rb;
 	private void Awake()
 	{
-		tower = transform.Find("Base/Tower").gameObject;
 		rb = GetComponent<Rigidbody>();
 	}
 
@@ -27,17 +28,19 @@ public class PlayerBehaviour : MonoBehaviour
 		if (!NUClient.connected || !isLocal)
 			return;
 
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetMouseButtonDown(0))
 		{
-			// NUClient.SendReliable(new Packet("Jmp"));
+
+			//NUClient.SendReliable(new Packet("Shoot"));
 		}
+	}
+	private void FixedUpdate()
+	{
+		if (!NUClient.connected || !isLocal)
+			return;
 
-		string msg = "Inp|" + EncodeInput() + ";" + EncodeInputTowerRotation();
+		string msg = "Inp|" + EncodePositionInput() + ";" + EncodeTowerRotationInput();
 		NUClient.SendUnreliable(new Packet(msg));
-
-
-
-		//LookAt(tower, GetTowerLookDirection());
 	}
 
 	public void DecodeVelocity(string msg)
@@ -45,14 +48,15 @@ public class PlayerBehaviour : MonoBehaviour
 		rb.velocity = NetUtility.DecodeVector(msg);
 	}
 
-	private string EncodeInput()
-	{
-		Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * moveSpeed;
-		return NetUtility.EncodeVector(input);
-	}
 	public string EncodePosition()
 	{
 		return NetUtility.EncodeVector(transform.position);
+	}
+
+	private string EncodePositionInput()
+	{
+		Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * moveSpeed;
+		return NetUtility.EncodeVector(input);
 	}
 
 	public void DecodePosition(string msg)
@@ -75,11 +79,12 @@ public class PlayerBehaviour : MonoBehaviour
 		return NetUtility.EncodeQuaternion(tower.transform.rotation);
 	}
 
-	public string EncodeInputTowerRotation()
+	public string EncodeTowerRotationInput()
 	{
-		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(GetTowerLookDirection().x, 0, GetTowerLookDirection().z));
-
+		Vector3 direction = GetTowerLookDirection();
+		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
 		Quaternion rotation = Quaternion.Slerp(tower.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+
 		return NetUtility.EncodeQuaternion(rotation);
 	}
 

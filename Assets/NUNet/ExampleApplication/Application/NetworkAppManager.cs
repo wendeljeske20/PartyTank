@@ -17,15 +17,15 @@ public class NetworkAppManager : MonoBehaviour
 	[SerializeField]
 	private List<Transform> spawnPositions;
 
-	private Dictionary<Guid, PlayerBehaviour> players = new Dictionary<Guid, PlayerBehaviour>();
+	private Dictionary<Guid, Player> players = new Dictionary<Guid, Player>();
 	//private List<Guid> playerGuids = new List<Guid>();
 	//private List<GameObject> playerObjects = new List<GameObject>();
 
 	[SerializeField]
-	private PlayerBehaviour playerClientPrefab;
+	private Player playerClientPrefab;
 
 	[SerializeField]
-	private PlayerBehaviour playerServerPrefab;
+	private Player playerServerPrefab;
 
 	private void Awake()
 	{
@@ -99,7 +99,7 @@ public class NetworkAppManager : MonoBehaviour
 			if (index != -1)
 			{
 				Debug.Log("INDEX1  " + index);
-				PlayerBehaviour player = GameObject.Instantiate(playerServerPrefab,
+				Player player = GameObject.Instantiate(playerServerPrefab,
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
@@ -126,7 +126,7 @@ public class NetworkAppManager : MonoBehaviour
 		else if (args[0] == "Inp")
 		{
 			string[] data = args[1].Split(';');
-			PlayerBehaviour player;
+			Player player;
 			if (players.TryGetValue(guid, out player))
 			{
 				player.DecodeVelocity(data[0]);
@@ -135,7 +135,7 @@ public class NetworkAppManager : MonoBehaviour
 		}
 		else if (args[0] == "Jmp")
 		{
-			PlayerBehaviour player;
+			Player player;
 			if (players.TryGetValue(guid, out player))
 			{
 				//Can Jump check
@@ -175,7 +175,7 @@ public class NetworkAppManager : MonoBehaviour
 				Guid guid = new Guid(data[0]);
 				string name = data[1];
 
-				PlayerBehaviour player;
+				Player player;
 
 				//Might be a reconnected player
 				if (players.TryGetValue(guid, out player))
@@ -205,7 +205,7 @@ public class NetworkAppManager : MonoBehaviour
 			{
 				string[] data = args[i].Split(';');
 				Guid guid = new Guid(data[0]);
-				PlayerBehaviour player;
+				Player player;
 				if (players.TryGetValue(guid, out player))
 				{
 					player.DecodePosition(data[1]);
@@ -217,7 +217,7 @@ public class NetworkAppManager : MonoBehaviour
 		else if (args[0] == "Dsc")
 		{
 			Guid guid = new Guid(args[1]);
-			PlayerBehaviour player;
+			Player player;
 			if (players.TryGetValue(guid, out player))
 			{
 				player.gameObject.SetActive(false);
@@ -232,7 +232,7 @@ public class NetworkAppManager : MonoBehaviour
 
 	private void PlayerDisconnectFromServer(Guid guid)
 	{
-		PlayerBehaviour player;
+		Player player;
 		if (players.TryGetValue(guid, out player))
 		{
 			GameObject.Destroy(player.gameObject);
@@ -245,7 +245,7 @@ public class NetworkAppManager : MonoBehaviour
 
 	private void PlayerTimedOutFromServer(Guid guid)
 	{
-		PlayerBehaviour player;
+		Player player;
 		if (players.TryGetValue(guid, out player))
 		{
 			player.gameObject.SetActive(false);

@@ -155,9 +155,9 @@ MonoBehaviour:
   - {fileID: 1372230570}
   - {fileID: 1340248946}
   - {fileID: 1781957116}
-  playerClientPrefab: {fileID: 1225961909896894645, guid: 5b93f126f63fc1648a408fb4b2dd8839,
+  playerClientPrefab: {fileID: 8575285455300593517, guid: 5b93f126f63fc1648a408fb4b2dd8839,
     type: 3}
-  playerServerPrefab: {fileID: 2541563818248040227, guid: 46f39c5c69341764a9062e0a03daeff1,
+  playerServerPrefab: {fileID: 8857407941966327703, guid: 46f39c5c69341764a9062e0a03daeff1,
     type: 3}
 --- !u!4 &137910296
 Transform:
