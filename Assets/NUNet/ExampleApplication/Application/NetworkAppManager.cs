@@ -17,7 +17,7 @@ public class NetworkAppManager : MonoBehaviour
 	[SerializeField]
 	private List<Transform> spawnPositions;
 
-	private Dictionary<Guid, PlayerBehaviour> playerObjects = new Dictionary<Guid, PlayerBehaviour>();
+	private Dictionary<Guid, PlayerBehaviour> players = new Dictionary<Guid, PlayerBehaviour>();
 	//private List<Guid> playerGuids = new List<Guid>();
 	//private List<GameObject> playerObjects = new List<GameObject>();
 
@@ -99,22 +99,22 @@ public class NetworkAppManager : MonoBehaviour
 			if (index != -1)
 			{
 				Debug.Log("INDEX1  " + index);
-				PlayerBehaviour playerObj = GameObject.Instantiate(playerServerPrefab,
+				PlayerBehaviour player = GameObject.Instantiate(playerServerPrefab,
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
 				if (NUClient.connected && guid == NUClient.guid) //Is Server Player
 				{
-					playerObj.isLocal = true;
+					player.isLocal = true;
 				}
 
-				playerObj.name = "Player (" + args[1] + ")";
-				playerObj.GetComponentInChildren<Text>().text = args[1];
-				playerObjects.Add(guid, playerObj);
+				player.name = "Player (" + args[1] + ")";
+				player.GetComponentInChildren<Text>().text = args[1];
+				players.Add(guid, player);
 			}
 
 			string playerData = "Spawn";
-			foreach (var player in playerObjects)
+			foreach (var player in players)
 			{
 				playerData += "|" + player.Key.ToString() + ";" + player.Value.name;
 			}
@@ -126,8 +126,8 @@ public class NetworkAppManager : MonoBehaviour
 		else if (args[0] == "Inp")
 		{
 			string plData = args[1];
-			PlayerBehaviour playerObj;
-			if (playerObjects.TryGetValue(guid, out playerObj))
+			PlayerBehaviour player;
+			if (players.TryGetValue(guid, out player))
 			{
 				string[] inpMsg = plData.Split(':');
 				Vector3 input = new Vector3(
@@ -135,24 +135,23 @@ public class NetworkAppManager : MonoBehaviour
 					float.Parse(inpMsg[1]),
 					float.Parse(inpMsg[2])
 					);
-				Rigidbody rb = playerObj.GetComponent<Rigidbody>();
-				rb.velocity = input;
+				player.rb.velocity = input;
 			}
 		}
 		else if (args[0] == "Jmp")
 		{
-			PlayerBehaviour playerObj;
-			if (playerObjects.TryGetValue(guid, out playerObj))
+			PlayerBehaviour player;
+			if (players.TryGetValue(guid, out player))
 			{
 				//Can Jump check
 				RaycastHit hit;
-				Vector3 playerPos = playerObj.transform.position;
+				Vector3 playerPos = player.transform.position;
 				if (Physics.Raycast(playerPos, Vector3.down, out hit))
 				{
 					if (hit.distance > 0.6f)
 						return;
 
-					Rigidbody rb = playerObj.GetComponent<Rigidbody>();
+					Rigidbody rb = player.GetComponent<Rigidbody>();
 					rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
 					rb.AddForce(Vector3.up * 5.0f, ForceMode.VelocityChange);
 				}
@@ -181,10 +180,10 @@ public class NetworkAppManager : MonoBehaviour
 				Guid guid = new Guid(data[0]);
 				string name = data[1];
 
-				PlayerBehaviour playerObj;
+				PlayerBehaviour player;
 
 				//Might be a reconnected player
-				if (playerObjects.TryGetValue(guid, out playerObj))
+				if (players.TryGetValue(guid, out player))
 				{
 
 					continue;
@@ -192,17 +191,17 @@ public class NetworkAppManager : MonoBehaviour
 				int index = LobbyManager.playerDatas[guid].lobbyIndex;
 				Debug.Log("INDEX2  " + index);
 
-				playerObj = GameObject.Instantiate(playerClientPrefab,
+				player = GameObject.Instantiate(playerClientPrefab,
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
 				if (guid == NUClient.guid)
 				{
-					playerObj.isLocal = true;
+					player.isLocal = true;
 				}
-				playerObj.name = "Player (" + name + ")";
-				playerObj.GetComponentInChildren<Text>().text = name;
-				playerObjects.Add(guid, playerObj);
+				player.name = "Player (" + name + ")";
+				player.GetComponentInChildren<Text>().text = name;
+				players.Add(guid, player);
 			}
 		}
 		else if (args[0] == "Sta") //State Data
@@ -211,8 +210,8 @@ public class NetworkAppManager : MonoBehaviour
 			{
 				string[] data = args[i].Split(';');
 				Guid guid = new Guid(data[0]);
-				PlayerBehaviour playerObj;
-				if (playerObjects.TryGetValue(guid, out playerObj))
+				PlayerBehaviour player;
+				if (players.TryGetValue(guid, out player))
 				{
 					string[] pos = data[1].Split(':');
 					Vector3 vPos = new Vector3(
@@ -220,7 +219,7 @@ public class NetworkAppManager : MonoBehaviour
 						float.Parse(pos[1]),
 						float.Parse(pos[2])
 						);
-					playerObj.transform.position = vPos;
+					player.transform.position = vPos;
 					string[] rot = data[2].Split(':');
 					Quaternion qRot = new Quaternion(
 						float.Parse(rot[0]),
@@ -228,17 +227,17 @@ public class NetworkAppManager : MonoBehaviour
 						float.Parse(rot[2]),
 						float.Parse(rot[3])
 						);
-					playerObj.transform.rotation = qRot;
+					player.transform.rotation = qRot;
 				}
 			}
 		}
 		else if (args[0] == "Dsc")
 		{
 			Guid guid = new Guid(args[1]);
-			PlayerBehaviour playerObj;
-			if (playerObjects.TryGetValue(guid, out playerObj))
+			PlayerBehaviour player;
+			if (players.TryGetValue(guid, out player))
 			{
-				playerObj.gameObject.SetActive(false);
+				player.gameObject.SetActive(false);
 			}
 		}
 
@@ -250,11 +249,11 @@ public class NetworkAppManager : MonoBehaviour
 
 	private void PlayerDisconnectFromServer(Guid guid)
 	{
-		PlayerBehaviour playerObject;
-		if (playerObjects.TryGetValue(guid, out playerObject))
+		PlayerBehaviour player;
+		if (players.TryGetValue(guid, out player))
 		{
-			GameObject.Destroy(playerObject);
-			playerObjects.Remove(guid);
+			GameObject.Destroy(player.gameObject);
+			players.Remove(guid);
 		}
 
 		NUServer.SendReliable(new Packet("Dsc|" + guid, NUServer.GetConnectedClients()));
@@ -263,10 +262,10 @@ public class NetworkAppManager : MonoBehaviour
 
 	private void PlayerTimedOutFromServer(Guid guid)
 	{
-		PlayerBehaviour playerObject;
-		if (playerObjects.TryGetValue(guid, out playerObject))
+		PlayerBehaviour player;
+		if (players.TryGetValue(guid, out player))
 		{
-			playerObject.gameObject.SetActive(false);
+			player.gameObject.SetActive(false);
 		}
 
 		NUServer.SendReliable(new Packet("Dsc|" + guid, NUServer.GetConnectedClients()));
@@ -276,7 +275,7 @@ public class NetworkAppManager : MonoBehaviour
 	private string GetStateMsg()
 	{
 		string stateData = "Sta";
-		foreach (var player in playerObjects)
+		foreach (var player in players)
 		{
 			Vector3 pos = player.Value.transform.position;
 			stateData += "|" + player.Key.ToString() + ";" + pos.x.ToString("R") + ":" + pos.y.ToString("R") + ":" + pos.z.ToString("R");
@@ -288,9 +287,9 @@ public class NetworkAppManager : MonoBehaviour
 
 	private byte[] GetStateData()
 	{
-		byte[] state = new byte[playerObjects.Count * (32/*GUID*/ + 12/*XYZ*/)];
+		byte[] state = new byte[players.Count * (32/*GUID*/ + 12/*XYZ*/)];
 		int i = 0;
-		foreach (var player in playerObjects)
+		foreach (var player in players)
 		{
 			//Copy GUID Data
 			Array.Copy(player.Key.ToByteArray(), 0, state, i * 44, 32);
