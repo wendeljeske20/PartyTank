@@ -11,13 +11,13 @@ public class PlayerBehaviour : MonoBehaviour
 
 	public float rotationSpeed = 5;
 
-	public Transform top;
+	public GameObject tower;
 
 	[HideInInspector]
 	public Rigidbody rb;
 	private void Start()
 	{
-		top = transform.Find("Base/Top");
+		tower = transform.Find("Base/Tower").gameObject;
 		rb = GetComponent<Rigidbody>();
 	}
 
@@ -41,28 +41,27 @@ public class PlayerBehaviour : MonoBehaviour
 		Packet inpPacket = new Packet(inpMsg);
 		NUClient.SendUnreliable(inpPacket);
 
-		//LookAtMouse();
+		LookAt(tower, GetTowerLookDirection());
 	}
 
-	private void LookAtMouse()
+	private Vector3 GetTowerLookDirection()
 	{
 		Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-		Plane groundPlane = new Plane(Vector3.up, new Vector3(0, top.transform.position.y, 0));
+		Plane groundPlane = new Plane(Vector3.up, new Vector3(0, tower.transform.position.y, 0));
 		float rayLenght;
+		Vector3 direction = Vector3.right;
 		if (groundPlane.Raycast(cameraRay, out rayLenght))
 		{
 			Vector3 pointToLook = new Vector3(cameraRay.GetPoint(rayLenght).x, cameraRay.GetPoint(rayLenght).y, cameraRay.GetPoint(rayLenght).z - 0.5f);
 
-			Vector3 direction = (pointToLook - top.transform.position).normalized;
-
-			LookAt(direction);
-
+			direction = (pointToLook - tower.transform.position).normalized;
 		}
+		return direction;
 	}
 
-	protected void LookAt(Vector3 direction)
+	protected void LookAt(GameObject obj, Vector3 direction)
 	{
 		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-		top.transform.rotation = Quaternion.Slerp(top.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+		obj.transform.rotation = Quaternion.Slerp(obj.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
 	}
 }
