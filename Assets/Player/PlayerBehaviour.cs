@@ -32,15 +32,8 @@ public class PlayerBehaviour : MonoBehaviour
 			// NUClient.SendReliable(new Packet("Jmp"));
 		}
 
-		//Stream Player Input
-		Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * moveSpeed;
-		//input *= Time.deltaTime;
-		//GetComponent<Rigidbody>().velocity = input;
-
-		string inpMsg = "Inp|";
-		inpMsg += input.x.ToString("R") + ":" + input.y.ToString("R") + ":" + input.z.ToString("R");
-		Packet inpPacket = new Packet(inpMsg);
-		NUClient.SendUnreliable(inpPacket);
+		string msg = "Inp|" + EncodeInput();
+		NUClient.SendUnreliable(new Packet(msg));
 
 		//LookAt(tower, GetTowerLookDirection());
 	}
@@ -50,48 +43,39 @@ public class PlayerBehaviour : MonoBehaviour
 		rb.velocity = velocity;
 	}
 
+	private string EncodeInput()
+	{
+		Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * moveSpeed;
+		return NetUtility.EncodeVector(input);
+	}
 	public string EncodePosition()
 	{
-		Vector3 pos = transform.position;
-		return string.Format("{0}:{1}:{2}",
-			pos.x.ToString("R"),
-			pos.y.ToString("R"),
-			pos.z.ToString("R")
-		);
+		return NetUtility.EncodeVector(transform.position);
 	}
 
 	public void DecodePosition(string msg)
 	{
-		string[] args = msg.Split(':');
-		Vector3 pos = new Vector3(
-			float.Parse(args[0]),
-			float.Parse(args[1]),
-			float.Parse(args[2])
-		);
-		transform.position = pos;
+		transform.position = NetUtility.DecodeVector(msg);
 	}
 
 	public string EncodeRotation()
 	{
-		Quaternion rot = transform.rotation;
-		return string.Format("{0}:{1}:{2}:{3}",
-			rot.x.ToString("R"),
-			rot.y.ToString("R"),
-			rot.z.ToString("R"),
-			rot.w.ToString("R")
-		);
+		return NetUtility.EncodeQuaternion(transform.rotation);
 	}
 
 	public void DecodeRotation(string msg)
 	{
-		string[] args = msg.Split(':');
-		Quaternion rot = new Quaternion(
-			float.Parse(args[0]),
-			float.Parse(args[1]),
-			float.Parse(args[2]),
-			float.Parse(args[3])
-		);
-		transform.rotation = rot;
+		transform.rotation = NetUtility.DecodeQuaternion(msg);
+	}
+
+	public string EncodeTowerRotation()
+	{
+		return NetUtility.EncodeQuaternion(tower.transform.rotation);
+	}
+
+	public void DecodeTowerRotation(string msg)
+	{
+		tower.transform.rotation = NetUtility.DecodeQuaternion(msg);
 	}
 
 	private Vector3 GetTowerLookDirection()
