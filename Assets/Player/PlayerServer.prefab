@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2933185501075833285}
   - component: {fileID: 2934785311088212167}
   - component: {fileID: 2934736930240177371}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 8857407941966327703}
   - component: {fileID: 8251281292997106643}
   - component: {fileID: 3493520525785566465}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PlayerServer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -205,7 +205,7 @@ GameObject:
   - component: {fileID: 2964037555390674547}
   - component: {fileID: 2964037555390674544}
   - component: {fileID: 2964037555390674545}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -286,7 +286,7 @@ GameObject:
   - component: {fileID: 9120322163283799434}
   - component: {fileID: 2964037555399716474}
   - component: {fileID: 2964037555399716475}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -385,7 +385,7 @@ GameObject:
   - component: {fileID: 2968612044566331413}
   - component: {fileID: 2979881917784827721}
   - component: {fileID: 2985890285135124515}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Base
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -466,7 +466,7 @@ GameObject:
   - component: {fileID: 3044057901443938423}
   - component: {fileID: 3041288342074795765}
   - component: {fileID: 2933503030410007413}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -541,7 +541,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1413966972266244755}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -556,7 +556,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5183488172329571941}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.7}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2964037555399716469}

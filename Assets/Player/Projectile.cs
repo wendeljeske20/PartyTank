@@ -65,14 +65,14 @@ public class Projectile : MonoBehaviour
 
 	}
 
-	private void OnCollisionEnter(Collision collision)
+	private void OnTriggerEnter(Collider other)
 	{
 		if (!LobbyManager.isHost || !canDestroy)
 			return;
 
-		IDamagable damagable = collision.gameObject.GetComponent<IDamagable>();
+		IDamagable damagable = other.gameObject.GetComponent<IDamagable>();
 
-		if (damagable == null || hittedDamagable == damagable)// || team == damagable.team)
+		if (damagable == null || hittedDamagable == damagable || team == damagable.team)
 			return;
 
 		damagable.TakeDamage(damage);

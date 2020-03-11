@@ -7,6 +7,8 @@ using System.Globalization;
 
 public class Player : MonoBehaviour, IDamagable
 {
+	public Team team { get; set; }
+
 	public float maxHealth = 100;
 
 	public float currentHealth;
@@ -30,6 +32,9 @@ public class Player : MonoBehaviour, IDamagable
 
 	private void Update()
 	{
+		team = isLocal ? Team.PLAYER : Team.ENEMY;
+		weapon.team = team;
+
 		if (!NUClient.connected || !isLocal)
 			return;
 
@@ -38,7 +43,7 @@ public class Player : MonoBehaviour, IDamagable
 			weapon.Attack();
 		}
 
-		
+
 	}
 	private void FixedUpdate()
 	{
