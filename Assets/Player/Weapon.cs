@@ -48,7 +48,7 @@ public class Weapon : MonoBehaviour
 		NUClient.SendReliable(new Packet(msg));
 	}
 
-	public virtual void Shoot()
+	public Projectile Shoot()
 	{
 		Projectile projectile = Instantiate(projectilePrefab, muzzle.transform.position, transform.rotation);
 
@@ -61,5 +61,7 @@ public class Weapon : MonoBehaviour
 		//AudioManager.PlaySFX(audioSource, Sound.PLASMA);
 
 		nextAttackInterval = 0;
+
+		return projectile;
 	}
 }

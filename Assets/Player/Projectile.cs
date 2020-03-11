@@ -75,6 +75,16 @@ public class Projectile : MonoBehaviour
 		hittedDamagable = damagable;
 		ToDestroy();
 	}
+
+	public string EncodePosition()
+	{
+		return NetUtility.EncodeVector(transform.position);
+	}
+
+	public void DecodePosition(string msg)
+	{
+		transform.position = NetUtility.DecodeVector(msg);
+	}
 }
 
 

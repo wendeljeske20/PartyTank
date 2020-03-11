@@ -18,8 +18,8 @@ public class NetworkAppManager : MonoBehaviour
 	private List<Transform> spawnPositions;
 
 	private Dictionary<Guid, Player> players = new Dictionary<Guid, Player>();
-	//private List<Guid> playerGuids = new List<Guid>();
-	//private List<GameObject> playerObjects = new List<GameObject>();
+
+	private Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
 
 	[SerializeField]
 	private Player playerClientPrefab;
@@ -138,9 +138,11 @@ public class NetworkAppManager : MonoBehaviour
 			Player player;
 			if (players.TryGetValue(guid, out player))
 			{
-				player.weapon.Shoot();
+				Projectile projectile = player.weapon.Shoot();
+				int index = projectile.gameObject.GetInstanceID();
+				projectiles.Add(index, projectile);
 
-				string sendMsg = "Shoot|" + guid.ToString();
+				string sendMsg = "Shoot|" + guid.ToString() + ";" + index;
 
 				List<Guid> guids = LobbyManager.connectedPlayers;
 				NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
@@ -159,7 +161,9 @@ public class NetworkAppManager : MonoBehaviour
 			return;
 
 		string msg = packet.GetMessageData();
+		Debug.Log("Received message: " + msg);
 		string[] args = msg.Split('|');
+
 		if (args[0] == "Spawn") //Player Profile Data
 		{
 			for (int i = 1; i < args.Length; i++)
@@ -192,9 +196,9 @@ public class NetworkAppManager : MonoBehaviour
 				players.Add(guid, player);
 			}
 		}
-		else if (args[0] == "Sta") //State Data
+		else if (args[0] == "State") //State Data
 		{
-			for (int i = 1; i < args.Length; i++)
+			for (int i = 1; i < players.Count + 1; i++)
 			{
 				string[] data = args[i].Split(';');
 				Guid guid = new Guid(data[0]);
@@ -206,6 +210,13 @@ public class NetworkAppManager : MonoBehaviour
 					player.DecodeTowerRotation(data[3]);
 				}
 			}
+			for (int j = players.Count + 1; j < args.Length; j++)
+			{
+				string[] data = args[j].Split(';');
+
+				int id = int.Parse(data[0]);
+				projectiles[id].DecodePosition(data[1]);
+			}
 		}
 		else if (args[0] == "Shoot")
 		{
@@ -213,9 +224,17 @@ public class NetworkAppManager : MonoBehaviour
 			Guid guid = new Guid(data[0]);
 
 			Player player;
+
 			if (players.TryGetValue(guid, out player))
 			{
-				player.weapon.Shoot();
+				int id = int.Parse(data[1]);
+				Projectile projectile = player.weapon.Shoot();
+				projectiles.Add(id, projectile);
+
+				if (guid == NUClient.guid)
+				{
+					Destroy(projectile.GetComponent<Rigidbody>());
+				}
 			}
 		}
 		else if (args[0] == "Dsc")
@@ -261,7 +280,7 @@ public class NetworkAppManager : MonoBehaviour
 
 	private string GetStateMsg()
 	{
-		string stateData = "Sta";
+		string stateData = "State";
 		foreach (var player in players)
 		{
 			stateData += string.Format("|{0};{1};{2};{3}",
@@ -269,6 +288,13 @@ public class NetworkAppManager : MonoBehaviour
 				player.Value.EncodePosition(),
 				player.Value.EncodeRotation(),
 				player.Value.EncodeTowerRotation()
+			);
+		}
+		foreach (var projectile in projectiles)
+		{
+			stateData += string.Format("|{0};{1}",
+				projectile.Key.ToString(),
+				projectile.Value.EncodePosition()
 			);
 		}
 		return stateData;
