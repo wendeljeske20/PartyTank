@@ -139,14 +139,33 @@ public class NetworkAppManager : MonoBehaviour
 			if (players.TryGetValue(guid, out player))
 			{
 				Projectile projectile = player.weapon.Shoot();
-				int index = projectile.gameObject.GetInstanceID();
-				projectiles.Add(index, projectile);
+				int id = projectile.gameObject.GetInstanceID();
+				projectile.id = id;
+				projectiles.Add(id, projectile);
 
-				string sendMsg = "Shoot|" + guid.ToString() + ";" + index;
+				string sendMsg = "Shoot|" + guid.ToString() + ";" + id;
 
 				List<Guid> guids = LobbyManager.connectedPlayers;
 				NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
 			}
+		}
+		else if (args[0] == "DestroyProjectile")
+		{
+			string[] data = args[1].Split(';');
+			int id = int.Parse(data[0]);
+
+			Projectile projectile;
+
+			if (projectiles.TryGetValue(id, out projectile))
+			{
+				projectile.ToDestroy();
+				projectiles.Remove(id);
+			}
+
+			string sendMsg = "DestroyProjectile|" + id;
+
+			List<Guid> guids = LobbyManager.connectedPlayers;
+			NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
 		}
 
 		if (packet.id >= 0)
@@ -164,7 +183,7 @@ public class NetworkAppManager : MonoBehaviour
 		Debug.Log("Received message: " + msg);
 		string[] args = msg.Split('|');
 
-		if (args[0] == "Spawn") //Player Profile Data
+		if (args[0] == "Spawn")
 		{
 			for (int i = 1; i < args.Length; i++)
 			{
@@ -196,7 +215,7 @@ public class NetworkAppManager : MonoBehaviour
 				players.Add(guid, player);
 			}
 		}
-		else if (args[0] == "State") //State Data
+		else if (args[0] == "State")
 		{
 			for (int i = 1; i < players.Count + 1; i++)
 			{
@@ -227,14 +246,28 @@ public class NetworkAppManager : MonoBehaviour
 
 			if (players.TryGetValue(guid, out player))
 			{
-				int id = int.Parse(data[1]);
 				Projectile projectile = player.weapon.Shoot();
+				int id = int.Parse(data[1]);
+				projectile.id = id;
 				projectiles.Add(id, projectile);
 
 				if (guid == NUClient.guid)
 				{
 					Destroy(projectile.GetComponent<Rigidbody>());
 				}
+			}
+		}
+		else if (args[0] == "DestroyProjectile")
+		{
+			string[] data = args[1].Split(';');
+			int id = int.Parse(data[0]);
+
+			Projectile projectile;
+
+			if (projectiles.TryGetValue(id, out projectile))
+			{
+				projectile.ToDestroy();
+				projectiles.Remove(id);
 			}
 		}
 		else if (args[0] == "Dsc")

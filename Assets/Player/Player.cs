@@ -5,8 +5,11 @@ using UnityEngine;
 using NUNet;
 using System.Globalization;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamagable
 {
+	public float maxHealth = 100;
+
+	public float currentHealth;
 
 	public float moveSpeed = 10;
 
@@ -22,6 +25,7 @@ public class Player : MonoBehaviour
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody>();
+		currentHealth = maxHealth;
 	}
 
 	private void Update()
@@ -33,6 +37,8 @@ public class Player : MonoBehaviour
 		{
 			weapon.Attack();
 		}
+
+		
 	}
 	private void FixedUpdate()
 	{
@@ -45,6 +51,17 @@ public class Player : MonoBehaviour
 		);
 
 		NUClient.SendUnreliable(new Packet(msg));
+	}
+
+	public void TakeDamage(int damage)
+	{
+		currentHealth -= damage;
+
+		if (currentHealth < 0)
+		{
+			//SendDestroy();
+			//gameObject.SetActive(false);
+		}
 	}
 
 	public void DecodeVelocity(string msg)

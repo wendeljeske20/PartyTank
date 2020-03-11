@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
 using System;
+using NUNet;
 
 public class Projectile : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class Projectile : MonoBehaviour
 
 	private float timer;
 
+	public int id;
+
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody>();
@@ -54,6 +57,7 @@ public class Projectile : MonoBehaviour
 		//if (timer > 0.05f)
 		canDestroy = true;
 	}
+
 	public void ToDestroy()
 	{
 		Destroy(gameObject);
@@ -61,19 +65,26 @@ public class Projectile : MonoBehaviour
 
 	}
 
-	protected void OnTriggerEnter(Collider other)
+	private void OnCollisionEnter(Collision collision)
 	{
-		if (!canDestroy)
+		if (!LobbyManager.isHost || !canDestroy)
 			return;
 
-		IDamagable damagable = other.GetComponent<IDamagable>();
+		IDamagable damagable = collision.gameObject.GetComponent<IDamagable>();
 
-		if (damagable == null || hittedDamagable == damagable || team == damagable.team)
+		if (damagable == null || hittedDamagable == damagable)// || team == damagable.team)
 			return;
 
 		damagable.TakeDamage(damage);
 		hittedDamagable = damagable;
-		ToDestroy();
+		//ToDestroy();
+		SendDestroy();
+	}
+
+	public void SendDestroy()
+	{
+		string msg = "DestroyProjectile|" + id;
+		NUClient.SendReliable(new Packet(msg));
 	}
 
 	public string EncodePosition()

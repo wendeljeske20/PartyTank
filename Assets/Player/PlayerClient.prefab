@@ -224,6 +224,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 011c0f5fa8fb5934683ca750d2834cad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 0
   moveSpeed: 10
   rotationSpeed: 5
   isLocal: 0
