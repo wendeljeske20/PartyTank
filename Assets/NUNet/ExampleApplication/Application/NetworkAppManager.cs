@@ -103,6 +103,8 @@ public class NetworkAppManager : MonoBehaviour
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
+				player.guid = guid;
+
 				if (NUClient.connected && guid == NUClient.guid) //Is Server Player
 				{
 					player.isLocal = true;
@@ -131,6 +133,23 @@ public class NetworkAppManager : MonoBehaviour
 			{
 				player.DecodeVelocity(data[0]);
 				player.DecodeTowerRotation(data[1]);
+			}
+		}
+		else if (args[0] == "TakeDamage")
+		{
+			string[] data = args[1].Split(';');
+			Guid id = new Guid(data[0]);
+
+			Player player;
+			if (players.TryGetValue(id, out player))
+			{
+				int damage = int.Parse(data[1]);
+				player.TakeDamage(damage);
+
+				string sendMsg = "TakeDamage|" + id.ToString() + ";" + damage;
+
+				List<Guid> guids = LobbyManager.connectedPlayers;
+				NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
 			}
 		}
 		else if (args[0] == "Shoot")
@@ -206,6 +225,8 @@ public class NetworkAppManager : MonoBehaviour
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
+				player.guid = guid;
+
 				if (guid == NUClient.guid)
 				{
 					player.isLocal = true;
@@ -235,6 +256,18 @@ public class NetworkAppManager : MonoBehaviour
 
 				int id = int.Parse(data[0]);
 				projectiles[id].DecodePosition(data[1]);
+			}
+		}
+		else if (args[0] == "TakeDamage")
+		{
+			string[] data = args[1].Split(';');
+			Guid guid = new Guid(data[0]);
+			int damage = int.Parse(data[1]);
+
+			Player player;
+			if (players.TryGetValue(guid, out player))
+			{
+				player.TakeDamage(damage);
 			}
 		}
 		else if (args[0] == "Shoot")

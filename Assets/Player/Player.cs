@@ -1,12 +1,17 @@
 ﻿
 
 using UnityEngine;
+using UnityEngine.UI;
 
 using NUNet;
 using System.Globalization;
+using System;
 
 public class Player : MonoBehaviour, IDamagable
 {
+	public Guid guid;
+
+	public Image healthBar;
 	public Team team { get; set; }
 
 	public float maxHealth = 100;
@@ -28,6 +33,7 @@ public class Player : MonoBehaviour, IDamagable
 	{
 		rb = GetComponent<Rigidbody>();
 		currentHealth = maxHealth;
+		UpdateHealthBar();
 	}
 
 	private void Update()
@@ -67,6 +73,19 @@ public class Player : MonoBehaviour, IDamagable
 			//SendDestroy();
 			//gameObject.SetActive(false);
 		}
+
+		UpdateHealthBar();
+	}
+
+	public void SendTakeDamage(int damage)
+	{
+		string msg = "TakeDamage|" + guid + ";" + damage;
+		NUClient.SendReliable(new Packet(msg));
+	}
+
+	private void UpdateHealthBar()
+	{
+		healthBar.fillAmount = currentHealth / maxHealth;
 	}
 
 	public void DecodeVelocity(string msg)

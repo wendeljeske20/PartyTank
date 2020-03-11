@@ -72,10 +72,10 @@ public class Projectile : MonoBehaviour
 
 		IDamagable damagable = other.gameObject.GetComponent<IDamagable>();
 
-		if (damagable == null || hittedDamagable == damagable || team == damagable.team)
+		if (damagable == null || hittedDamagable == damagable)// || team == damagable.team)
 			return;
 
-		damagable.TakeDamage(damage);
+		damagable.SendTakeDamage(damage);
 		hittedDamagable = damagable;
 		//ToDestroy();
 		SendDestroy();
