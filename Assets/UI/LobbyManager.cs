@@ -101,13 +101,7 @@ public class LobbyManager : MonoBehaviour
 	{
 		connectedPlayers.Add(guid);
 
-		//UnityTask.DelayedAction(1f, () =>
-		//{
-		//Packet packet = new Packet("PlayerConnected|" + guid + ";" + playerName);
-		//NUClient.SendReliable(packet);
-		//});
 		Debug.Log("Connected");
-
 	}
 
 	private void ClientReconnected(Guid guid)
@@ -171,7 +165,7 @@ public class LobbyManager : MonoBehaviour
 		if (args[0] == "PlayerConnected")
 		{
 			string[] data = args[1].Split(';');
-			string name = data[1];
+			string name = data[0];
 
 			PlayerNetData playerData = new PlayerNetData();
 			playerData.name = name;

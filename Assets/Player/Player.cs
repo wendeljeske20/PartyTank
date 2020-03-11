@@ -9,7 +9,7 @@ using System;
 
 public class Player : MonoBehaviour, IDamagable
 {
-	public Guid guid;
+	public PlayerNetData data;
 
 	public Image healthBar;
 	public Team team { get; set; }
@@ -21,8 +21,6 @@ public class Player : MonoBehaviour, IDamagable
 	public float moveSpeed = 10;
 
 	public float rotationSpeed = 5;
-
-	public bool isLocal;
 
 	public GameObject tower;
 
@@ -38,10 +36,10 @@ public class Player : MonoBehaviour, IDamagable
 
 	private void Update()
 	{
-		team = isLocal ? Team.PLAYER : Team.ENEMY;
+		team = data.isLocal ? Team.PLAYER : Team.ENEMY;
 		weapon.team = team;
 
-		if (!NUClient.connected || !isLocal)
+		if (!NUClient.connected || !data.isLocal)
 			return;
 
 		if (Input.GetMouseButton(0))
@@ -53,7 +51,7 @@ public class Player : MonoBehaviour, IDamagable
 	}
 	private void FixedUpdate()
 	{
-		if (!NUClient.connected || !isLocal)
+		if (!NUClient.connected || !data.isLocal)
 			return;
 
 		string msg = string.Format("Inp|{0};{1}",
@@ -79,7 +77,7 @@ public class Player : MonoBehaviour, IDamagable
 
 	public void SendTakeDamage(int damage)
 	{
-		string msg = "TakeDamage|" + guid + ";" + damage;
+		string msg = "TakeDamage|" + data.guid + ";" + damage;
 		NUClient.SendReliable(new Packet(msg));
 	}
 

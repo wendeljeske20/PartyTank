@@ -45,8 +45,8 @@ namespace Game
 		{
 			NUClient.SetupBroadcast(NUUtilities.ListIPv4Addresses()[0]);
 			nameField.text = "GUESS " + UnityEngine.Random.Range(100, 1000).ToString();
-			//ipAddressField.text = "192.168.0.4";
-			ipAddressField.text = "191.4.232.155";
+			ipAddressField.text = "192.168.0.4";
+			//ipAddressField.text = "191.4.232.155";
 			portField.text = "25565";
 		}
 
@@ -63,7 +63,7 @@ namespace Game
 		private void ConnectedToServer()
 		{
 			lobbyManager.gameObject.SetActive(true);
-			Packet packet = new Packet("PlayerConnected|" + "000" + ";" + LobbyManager.playerName);
+			Packet packet = new Packet("PlayerConnected|" + LobbyManager.playerName);
 			NUClient.SendReliable(packet);
 		}
 

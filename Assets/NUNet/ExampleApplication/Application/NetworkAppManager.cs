@@ -103,11 +103,12 @@ public class NetworkAppManager : MonoBehaviour
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
-				player.guid = guid;
+				player.data = LobbyManager.playerDatas[guid];
+				player.data.guid = guid;
 
 				if (NUClient.connected && guid == NUClient.guid) //Is Server Player
 				{
-					player.isLocal = true;
+					player.data.isLocal = true;
 				}
 
 				player.name = "Player (" + args[1] + ")";
@@ -225,11 +226,12 @@ public class NetworkAppManager : MonoBehaviour
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
-				player.guid = guid;
+				player.data = LobbyManager.playerDatas[guid];
+				player.data.guid = guid;
 
 				if (guid == NUClient.guid)
 				{
-					player.isLocal = true;
+					player.data.isLocal = true;
 				}
 				player.name = "Player (" + name + ")";
 				player.GetComponentInChildren<Text>().text = name;
