@@ -9,7 +9,6 @@ using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviour
 {
-	public static List<Guid> connectedPlayers = new List<Guid>();
 	public bool allReady;
 	public static string playerName = "123";
 	public static bool isHost;
@@ -36,12 +35,6 @@ public class LobbyManager : MonoBehaviour
 		NUServer.onClientDisconnected += PlayerDisconnectFromServer;
 		//NUServer.onClientTimedOut += PlayerTimedOutFromServer;
 		NUServer.onClientPacketReceived += ServerReceivedPacket;
-
-		//If is Server and Client, register Player
-		if (NUServer.started && NUClient.connected)
-		{
-			LobbyManager.connectedPlayers.Add(NUClient.guid);
-		}
 
 		NUClient.onPacketReceived += ClientReceivedPacket;
 		NUClient.onDisconnected += ClientDisconnected;
@@ -96,14 +89,11 @@ public class LobbyManager : MonoBehaviour
 
 	private void ClientConnected(Guid guid)
 	{
-		connectedPlayers.Add(guid);
-
 		Debug.Log("Connected");
 	}
 
 	private void ClientReconnected(Guid guid)
 	{
-		connectedPlayers.Add(guid);
 		Debug.Log("Reconnect");
 	}
 
@@ -128,7 +118,7 @@ public class LobbyManager : MonoBehaviour
 
 	public void SendStartMatch()
 	{
-		NUServer.SendReliable(new Packet(((int)Message.START_MATCH).ToString(), connectedPlayers.ToArray()));
+		NUServer.SendReliable(new Packet(((int)Message.START_MATCH).ToString(), NUServer.GetConnectedClients()));
 		StartMatch();
 	}
 
@@ -139,19 +129,18 @@ public class LobbyManager : MonoBehaviour
 
 	private void PlayerDisconnectFromServer(Guid guid)
 	{
-		connectedPlayers.Remove(guid);
 		int index = playerDatas[guid].lobbyIndex;
 		lobbyPanels[index].nameText.text = "111";
 
 		playerDatas.Remove(guid);
 
-		Packet packet = new Packet((int)Message.PLAYER_DISCONNECTED + "|" + guid, connectedPlayers.ToArray()); ;
+		Packet packet = new Packet((int)Message.PLAYER_DISCONNECTED + "|" + guid, NUServer.GetConnectedClients()); ;
 		NUServer.SendReliable(packet);
 	}
 
 	private void ServerReceivedPacket(Guid guid, Packet packet)
 	{
-		if (!connectedPlayers.Contains(guid))
+		if (!NUServer.clients.ContainsKey(guid))
 			return;
 
 		string msg = packet.GetMessageData();
@@ -186,7 +175,7 @@ public class LobbyManager : MonoBehaviour
 			}
 
 			Debug.Log("Send message: " + sendMsg);
-			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
+			NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 
 			sendMsg = ((int)Message.PLAYER_JOIN).ToString();
 			foreach (var pData in playerDatas)
@@ -220,8 +209,7 @@ public class LobbyManager : MonoBehaviour
 
 			Debug.Log("Send message: " + sendMsg);
 
-			List<Guid> guids = new List<Guid>(playerDatas.Keys);
-			NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
+			NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 
 		}
 		else if (msgID == (int)Message.PLAYER_JOIN)
@@ -267,7 +255,7 @@ public class LobbyManager : MonoBehaviour
 
 			Debug.Log("Send message: " + sendMsg);
 
-			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
+			NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 		}
 
 		if (packet.id >= 0)

@@ -38,28 +38,23 @@ public class NetworkAppManager : MonoBehaviour
 		NUServer.onClientTimedOut += PlayerTimedOutFromServer;
 		NUServer.onClientPacketReceived += ServerReceivedPacket;
 
-		//If is Server and Client, register Player
-		if (NUServer.started && NUClient.connected)
-		{
-			LobbyManager.connectedPlayers.Add(NUClient.guid);
-		}
-
 		NUClient.onPacketReceived += ClientReceivedPacket;
 		NUClient.onDisconnected += ClientDisconnected;
 	}
 
 	private void Start()
 	{
-		Spawn();
+		if (NUServer.started) //Is Server!
+		{
+			Spawn();
+		}
 	}
 	private void ClientConnected(Guid id)
 	{
-		LobbyManager.connectedPlayers.Add(id);
 	}
 
 	private void ClientReconnected(Guid id)
 	{
-		LobbyManager.connectedPlayers.Add(id);
 	}
 
 	private void ClientDisconnected()
@@ -79,31 +74,19 @@ public class NetworkAppManager : MonoBehaviour
 
 	public void Spawn()
 	{
-		Packet spawnPacket = new Packet("Spawn|" + LobbyManager.playerName);
-		Debug.Log(LobbyManager.playerDatas[NUClient.guid].name);
-		NUClient.SendReliable(spawnPacket);
-	}
-
-	private void ServerReceivedPacket(Guid guid, Packet packet)
-	{
-		if (!LobbyManager.connectedPlayers.Contains(guid))
-			return;
-
-		string msg = packet.GetMessageData();
-		string[] args = msg.Split('|');
-
-		if (args[0] == "Spawn")
+		foreach (Guid guid in NUServer.GetConnectedClients())
 		{
-			int index = LobbyManager.playerDatas[guid].lobbyIndex;
+			PlayerNetData playerData = LobbyManager.playerDatas[guid];
+			int index = playerData.lobbyIndex;
 
 			if (index != -1)
 			{
-				Debug.Log("INDEX1  " + index);
+				//Debug.Log("INDEX1  " + index);
 				Player player = GameObject.Instantiate(playerServerPrefab,
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
-				player.data = LobbyManager.playerDatas[guid];
+				player.data = playerData;
 				player.data.guid = guid;
 
 				if (NUClient.connected && guid == NUClient.guid) //Is Server Player
@@ -111,22 +94,32 @@ public class NetworkAppManager : MonoBehaviour
 					player.data.isLocal = true;
 				}
 
-				player.name = "Player (" + args[1] + ")";
-				player.GetComponentInChildren<Text>().text = args[1];
+				player.name = player.data.name;
+				player.GetComponentInChildren<Text>().text = player.name;
 				players.Add(guid, player);
 			}
-
-			string playerData = "Spawn";
-			foreach (var player in players)
-			{
-				playerData += "|" + player.Key.ToString() + ";" + player.Value.name;
-			}
-
-			List<Guid> guids = LobbyManager.connectedPlayers;
-			NUServer.SendReliable(new Packet(playerData, guids.ToArray()));
-			NUServer.SendReliable(new Packet(GetStateMsg(), guids.ToArray()));
 		}
-		else if (args[0] == "Inp")
+
+		string sendMsg = "Spawn";
+		foreach (var player in players)
+		{
+			sendMsg += "|" + player.Key.ToString() + ";" + player.Value.name;
+		}
+
+		Guid[] guids = NUServer.GetConnectedClients();
+		NUServer.SendReliable(new Packet(sendMsg, guids));
+		NUServer.SendReliable(new Packet(GetStateMsg(), guids));
+	}
+
+	private void ServerReceivedPacket(Guid guid, Packet packet)
+	{
+		if (!NUServer.clients.ContainsKey(guid))
+			return;
+
+		string msg = packet.GetMessageData();
+		string[] args = msg.Split('|');
+
+		if (args[0] == "Inp")
 		{
 			string[] data = args[1].Split(';');
 			Player player;
@@ -149,8 +142,7 @@ public class NetworkAppManager : MonoBehaviour
 
 				string sendMsg = "TakeDamage|" + id.ToString() + ";" + damage;
 
-				List<Guid> guids = LobbyManager.connectedPlayers;
-				NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
+				NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 			}
 		}
 		else if (args[0] == "Shoot")
@@ -165,8 +157,7 @@ public class NetworkAppManager : MonoBehaviour
 
 				string sendMsg = "Shoot|" + guid.ToString() + ";" + id;
 
-				List<Guid> guids = LobbyManager.connectedPlayers;
-				NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
+				NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 			}
 		}
 		else if (args[0] == "DestroyProjectile")
@@ -184,8 +175,7 @@ public class NetworkAppManager : MonoBehaviour
 
 			string sendMsg = "DestroyProjectile|" + id;
 
-			List<Guid> guids = LobbyManager.connectedPlayers;
-			NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
+			NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 		}
 
 		if (packet.id >= 0)
@@ -331,7 +321,6 @@ public class NetworkAppManager : MonoBehaviour
 		}
 
 		NUServer.SendReliable(new Packet("Dsc|" + guid, NUServer.GetConnectedClients()));
-		LobbyManager.connectedPlayers.Remove(guid);
 	}
 
 	private void PlayerTimedOutFromServer(Guid guid)
@@ -343,7 +332,6 @@ public class NetworkAppManager : MonoBehaviour
 		}
 
 		NUServer.SendReliable(new Packet("Dsc|" + guid, NUServer.GetConnectedClients()));
-		LobbyManager.connectedPlayers.Remove(guid);
 	}
 
 	private string GetStateMsg()
