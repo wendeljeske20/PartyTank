@@ -1,0 +1,8 @@
+﻿public enum Message
+{
+	NONE,
+	PLAYER_CONNECTED,
+	PLAYER_DISCONNECTED,
+	PLAYER_JOIN,
+	START_MATCH
+}

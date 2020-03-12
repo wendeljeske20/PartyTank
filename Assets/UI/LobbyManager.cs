@@ -2,13 +2,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using UnityEngine;
 using UnityEngine.UI;
 using NUNet;
 using UnityEngine.SceneManagement;
-using Game;
-using UnityEditor;
 
 public class LobbyManager : MonoBehaviour
 {
@@ -125,14 +122,14 @@ public class LobbyManager : MonoBehaviour
 
 	private void Join(int index)
 	{
-		Packet packet = new Packet("PlayerJoin|" + playerName + ";" + index);
+		Packet packet = new Packet((int)Message.PLAYER_JOIN + "|" + playerName + ";" + index);
 		NUClient.SendReliable(packet);
 	}
 
 	public void SendStartMatch()
 	{
-		Packet packet = new Packet("StartMatch");
-		NUClient.SendReliable(packet);
+		NUServer.SendReliable(new Packet(((int)Message.START_MATCH).ToString(), connectedPlayers.ToArray()));
+		StartMatch();
 	}
 
 	private void StartMatch()
@@ -148,7 +145,7 @@ public class LobbyManager : MonoBehaviour
 
 		playerDatas.Remove(guid);
 
-		Packet packet = new Packet("PlayerDisconnected|" + guid, connectedPlayers.ToArray()); ;
+		Packet packet = new Packet((int)Message.PLAYER_DISCONNECTED + "|" + guid, connectedPlayers.ToArray()); ;
 		NUServer.SendReliable(packet);
 	}
 
@@ -159,10 +156,12 @@ public class LobbyManager : MonoBehaviour
 
 		string msg = packet.GetMessageData();
 		string[] args = msg.Split('|');
+		int msgID;
+		int.TryParse(args[0], out msgID);
 
 		Debug.Log("Received message: " + msg);
 
-		if (args[0] == "PlayerConnected")
+		if (msgID == (int)Message.PLAYER_CONNECTED)
 		{
 			string[] data = args[1].Split(';');
 			string name = data[0];
@@ -180,7 +179,7 @@ public class LobbyManager : MonoBehaviour
 			}
 			playerDatas.Add(guid, playerData);
 
-			string sendMsg = "PlayerConnected";
+			string sendMsg = ((int)Message.PLAYER_CONNECTED).ToString();
 			foreach (var pData in playerDatas)
 			{
 				sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.lobbyIndex);
@@ -189,7 +188,7 @@ public class LobbyManager : MonoBehaviour
 			Debug.Log("Send message: " + sendMsg);
 			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
 
-			sendMsg = "PlayerJoin";
+			sendMsg = ((int)Message.PLAYER_JOIN).ToString();
 			foreach (var pData in playerDatas)
 			{
 				if (pData.Value.lobbyIndex != -1)
@@ -201,7 +200,7 @@ public class LobbyManager : MonoBehaviour
 			NUServer.SendReliable(new Packet(sendMsg, new Guid[] { guid }));
 
 		}
-		else if (args[0] == "PlayerDisconnected")
+		else if (msgID == (int)Message.PLAYER_DISCONNECTED)
 		{
 			string[] data = args[1].Split(';');
 			//Guid guid = new Guid(data[0]);
@@ -212,7 +211,7 @@ public class LobbyManager : MonoBehaviour
 			playerPanel.nameText.color = Color.white;
 			playerPanel.joinButton.gameObject.SetActive(true);
 
-			string sendMsg = "PlayerDisconnected";
+			string sendMsg = ((int)Message.PLAYER_DISCONNECTED).ToString();
 			var pData = playerDatas[guid];
 
 			sendMsg += string.Format("|{0};{1};{2}", guid, pData.name, pData.lobbyIndex);
@@ -225,7 +224,7 @@ public class LobbyManager : MonoBehaviour
 			NUServer.SendReliable(new Packet(sendMsg, guids.ToArray()));
 
 		}
-		else if (args[0] == "PlayerJoin")
+		else if (msgID == (int)Message.PLAYER_JOIN)
 		{
 			string[] data = args[1].Split(';');
 
@@ -259,7 +258,7 @@ public class LobbyManager : MonoBehaviour
 
 
 
-			string sendMsg = "PlayerJoin";
+			string sendMsg = ((int)Message.PLAYER_JOIN).ToString();
 			foreach (var pData in playerDatas)
 			{
 				if (pData.Value.lobbyIndex != -1)
@@ -269,12 +268,6 @@ public class LobbyManager : MonoBehaviour
 			Debug.Log("Send message: " + sendMsg);
 
 			NUServer.SendReliable(new Packet(sendMsg, connectedPlayers.ToArray()));
-		}
-		else if (args[0] == "StartMatch")
-		{
-			List<Guid> guids = new List<Guid>(connectedPlayers);
-			NUServer.SendReliable(new Packet("StartMatch", guids.ToArray()));
-			StartMatch();
 		}
 
 		if (packet.id >= 0)
@@ -290,9 +283,11 @@ public class LobbyManager : MonoBehaviour
 
 		string msg = packet.GetMessageData();
 		string[] args = msg.Split('|');
+		int msgID;
+		int.TryParse(args[0], out msgID);
 		Debug.Log("Received message: " + msg);
 
-		if (args[0] == "PlayerConnected")
+		if (msgID == (int)Message.PLAYER_CONNECTED)
 		{
 			for (int i = 1; i < args.Length; i++)
 			{
@@ -332,7 +327,7 @@ public class LobbyManager : MonoBehaviour
 				playerDatas.Add(guid, playerData);
 			}
 		}
-		else if (args[0] == "PlayerDisconnected")
+		else if (msgID == (int)Message.PLAYER_DISCONNECTED)
 		{
 			string[] data = args[1].Split(';');
 
@@ -348,7 +343,7 @@ public class LobbyManager : MonoBehaviour
 
 			//playerDatas.Remove(guid);
 		}
-		else if (args[0] == "PlayerJoin") //Player Profile Data
+		else if (msgID == (int)Message.PLAYER_JOIN) //Player Profile Data
 		{
 			for (int i = 1; i < args.Length; i++)
 			{
@@ -398,7 +393,7 @@ public class LobbyManager : MonoBehaviour
 				//playerDatas.Add(guid, playerData);
 			}
 		}
-		else if (args[0] == "StartMatch")
+		else if (msgID == (int)Message.START_MATCH)
 		{
 			StartMatch();
 		}

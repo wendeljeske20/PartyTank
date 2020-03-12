@@ -63,7 +63,7 @@ namespace Game
 		private void ConnectedToServer()
 		{
 			lobbyManager.gameObject.SetActive(true);
-			Packet packet = new Packet("PlayerConnected|" + LobbyManager.playerName);
+			Packet packet = new Packet((int)Message.PLAYER_CONNECTED + "|" + LobbyManager.playerName);
 			NUClient.SendReliable(packet);
 		}
 
