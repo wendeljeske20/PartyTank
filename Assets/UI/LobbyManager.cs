@@ -118,7 +118,7 @@ public class LobbyManager : MonoBehaviour
 
 	public void SendStartMatch()
 	{
-		NUServer.SendReliable(new Packet(((int)Message.START_MATCH).ToString(), NUServer.GetConnectedClients()));
+		NUServer.SendReliable(new Packet((Message.START_MATCH.ToString("d"), NUServer.GetConnectedClients()));
 		StartMatch();
 	}
 
@@ -168,7 +168,7 @@ public class LobbyManager : MonoBehaviour
 			}
 			playerDatas.Add(guid, playerData);
 
-			string sendMsg = ((int)Message.PLAYER_CONNECTED).ToString();
+			string sendMsg = Message.PLAYER_CONNECTED.ToString("d");
 			foreach (var pData in playerDatas)
 			{
 				sendMsg += string.Format("|{0};{1};{2}",
@@ -181,7 +181,7 @@ public class LobbyManager : MonoBehaviour
 			Debug.Log("Send message: " + sendMsg);
 			NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 
-			sendMsg = ((int)Message.PLAYER_JOIN).ToString();
+			sendMsg = Message.PLAYER_JOIN.ToString("d");
 			foreach (var pData in playerDatas)
 			{
 				if (pData.Value.lobbyIndex != -1)
@@ -210,7 +210,7 @@ public class LobbyManager : MonoBehaviour
 			playerPanel.nameText.color = Color.white;
 			playerPanel.joinButton.gameObject.SetActive(true);
 
-			string sendMsg = ((int)Message.PLAYER_DISCONNECTED).ToString();
+			string sendMsg = Message.PLAYER_DISCONNECTED.ToString("d");
 			var pData = playerDatas[guid];
 
 			sendMsg += string.Format("|{0};{1};{2}",
@@ -259,7 +259,7 @@ public class LobbyManager : MonoBehaviour
 			}
 
 
-			string sendMsg = ((int)Message.PLAYER_JOIN).ToString();
+			string sendMsg = Message.PLAYER_JOIN.ToString("d");
 			foreach (var pData in playerDatas)
 			{
 				if (pData.Value.lobbyIndex != -1)
