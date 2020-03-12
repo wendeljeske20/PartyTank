@@ -118,7 +118,7 @@ public class LobbyManager : MonoBehaviour
 
 	public void SendStartMatch()
 	{
-		NUServer.SendReliable(new Packet((Message.START_MATCH.ToString("d"), NUServer.GetConnectedClients()));
+		NUServer.SendReliable(new Packet(Message.START_MATCH.ToString("d"), NUServer.GetConnectedClients()));
 		StartMatch();
 	}
 

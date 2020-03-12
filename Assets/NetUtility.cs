@@ -8,9 +8,9 @@ public static class NetUtility
 	public static string EncodeVector(Vector3 vec)
 	{
 		return string.Format("{0}:{1}:{2}",
-			vec.x.ToString("R"),
-			vec.y.ToString("R"),
-			vec.z.ToString("R")
+			vec.x.ToString("F2"),
+			vec.y.ToString("F2"),
+			vec.z.ToString("F2")
 		);
 	}
 
@@ -27,10 +27,10 @@ public static class NetUtility
 	public static string EncodeQuaternion(Quaternion quat)
 	{
 		return string.Format("{0}:{1}:{2}:{3}",
-			quat.x.ToString("R"),
-			quat.y.ToString("R"),
-			quat.z.ToString("R"),
-			quat.w.ToString("R")
+			quat.x.ToString("F2"),
+			quat.y.ToString("F2"),
+			quat.z.ToString("F2"),
+			quat.w.ToString("F2")
 		);
 	}
 

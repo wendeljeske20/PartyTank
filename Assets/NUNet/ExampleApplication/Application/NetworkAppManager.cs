@@ -67,8 +67,10 @@ public class NetworkAppManager : MonoBehaviour
 		if (NUServer.started) //Is Server!
 		{
 			//Send Game-state to everyone online
+			string sendMsg = GetStateMsg();
 			Packet stateData = new Packet(GetStateMsg(), NUServer.GetConnectedClients());
 			NUServer.SendUnreliable(stateData);
+			Debug.Log(sendMsg.Length + "|||||" + sendMsg);
 		}
 	}
 
