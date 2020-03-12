@@ -19,7 +19,7 @@ public class NetworkAppManager : MonoBehaviour
 
 	private Dictionary<Guid, Player> players = new Dictionary<Guid, Player>();
 
-	private Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
+	public static Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
 
 	[SerializeField]
 	private Player playerClientPrefab;
@@ -100,7 +100,7 @@ public class NetworkAppManager : MonoBehaviour
 			}
 		}
 
-		string sendMsg = "Spawn";
+		string sendMsg = Message.PLAYER_SPAWN.ToString("d");
 		foreach (var player in players)
 		{
 			sendMsg += "|" + player.Key.ToString() + ";" + player.Value.name;
@@ -118,8 +118,10 @@ public class NetworkAppManager : MonoBehaviour
 
 		string msg = packet.GetMessageData();
 		string[] args = msg.Split('|');
+		int msgID;
+		int.TryParse(args[0], out msgID);
 
-		if (args[0] == "Inp")
+		if (msgID == (int)Message.PLAYER_INPUT)
 		{
 			string[] data = args[1].Split(';');
 			Player player;
@@ -129,23 +131,7 @@ public class NetworkAppManager : MonoBehaviour
 				player.DecodeTowerRotation(data[1]);
 			}
 		}
-		else if (args[0] == "TakeDamage")
-		{
-			string[] data = args[1].Split(';');
-			Guid id = new Guid(data[0]);
-
-			Player player;
-			if (players.TryGetValue(id, out player))
-			{
-				int damage = int.Parse(data[1]);
-				player.TakeDamage(damage);
-
-				string sendMsg = "TakeDamage|" + id.ToString() + ";" + damage;
-
-				NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
-			}
-		}
-		else if (args[0] == "Shoot")
+		else if (msgID == (int)Message.PLAYER_SHOOT)
 		{
 			Player player;
 			if (players.TryGetValue(guid, out player))
@@ -155,27 +141,10 @@ public class NetworkAppManager : MonoBehaviour
 				projectile.id = id;
 				projectiles.Add(id, projectile);
 
-				string sendMsg = "Shoot|" + guid.ToString() + ";" + id;
+				string sendMsg = (int)Message.PLAYER_SHOOT + "|" + guid.ToString() + ";" + id;
 
 				NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 			}
-		}
-		else if (args[0] == "DestroyProjectile")
-		{
-			string[] data = args[1].Split(';');
-			int id = int.Parse(data[0]);
-
-			Projectile projectile;
-
-			if (projectiles.TryGetValue(id, out projectile))
-			{
-				projectile.ToDestroy();
-				projectiles.Remove(id);
-			}
-
-			string sendMsg = "DestroyProjectile|" + id;
-
-			NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 		}
 
 		if (packet.id >= 0)
@@ -192,8 +161,10 @@ public class NetworkAppManager : MonoBehaviour
 		string msg = packet.GetMessageData();
 		Debug.Log("Received message: " + msg);
 		string[] args = msg.Split('|');
+		int msgID;
+		int.TryParse(args[0], out msgID);
 
-		if (args[0] == "Spawn")
+		if (msgID == (int)Message.PLAYER_SPAWN)
 		{
 			for (int i = 1; i < args.Length; i++)
 			{
@@ -228,7 +199,7 @@ public class NetworkAppManager : MonoBehaviour
 				players.Add(guid, player);
 			}
 		}
-		else if (args[0] == "State")
+		else if (msgID == (int)Message.PLAYER_PROJECTILES_STATE)
 		{
 			for (int i = 1; i < players.Count + 1; i++)
 			{
@@ -250,7 +221,7 @@ public class NetworkAppManager : MonoBehaviour
 				projectiles[id].DecodePosition(data[1]);
 			}
 		}
-		else if (args[0] == "TakeDamage")
+		else if (msgID == (int)Message.PLAYER_TAKE_DAMAGE)
 		{
 			string[] data = args[1].Split(';');
 			Guid guid = new Guid(data[0]);
@@ -262,7 +233,7 @@ public class NetworkAppManager : MonoBehaviour
 				player.TakeDamage(damage);
 			}
 		}
-		else if (args[0] == "Shoot")
+		else if (msgID == (int)Message.PLAYER_SHOOT)
 		{
 			string[] data = args[1].Split(';');
 			Guid guid = new Guid(data[0]);
@@ -282,7 +253,7 @@ public class NetworkAppManager : MonoBehaviour
 				}
 			}
 		}
-		else if (args[0] == "DestroyProjectile")
+		else if (msgID == (int)Message.DESTROY_PROJECTILE)
 		{
 			string[] data = args[1].Split(';');
 			int id = int.Parse(data[0]);
@@ -295,7 +266,7 @@ public class NetworkAppManager : MonoBehaviour
 				projectiles.Remove(id);
 			}
 		}
-		else if (args[0] == "Dsc")
+		else if (msgID == (int)Message.PLAYER_DISCONNECTED)
 		{
 			Guid guid = new Guid(args[1]);
 			Player player;
@@ -320,7 +291,7 @@ public class NetworkAppManager : MonoBehaviour
 			players.Remove(guid);
 		}
 
-		NUServer.SendReliable(new Packet("Dsc|" + guid, NUServer.GetConnectedClients()));
+		NUServer.SendReliable(new Packet((int)Message.PLAYER_DISCONNECTED + "|" + guid, NUServer.GetConnectedClients()));
 	}
 
 	private void PlayerTimedOutFromServer(Guid guid)
@@ -331,15 +302,15 @@ public class NetworkAppManager : MonoBehaviour
 			player.gameObject.SetActive(false);
 		}
 
-		NUServer.SendReliable(new Packet("Dsc|" + guid, NUServer.GetConnectedClients()));
+		NUServer.SendReliable(new Packet((int)Message.PLAYER_DISCONNECTED + "|" + guid, NUServer.GetConnectedClients()));
 	}
 
 	private string GetStateMsg()
 	{
-		string stateData = "State";
+		string sendMsg = Message.PLAYER_PROJECTILES_STATE.ToString("d");
 		foreach (var player in players)
 		{
-			stateData += string.Format("|{0};{1};{2};{3}",
+			sendMsg += string.Format("|{0};{1};{2};{3}",
 				player.Key.ToString(),
 				player.Value.EncodePosition(),
 				player.Value.EncodeRotation(),
@@ -348,12 +319,12 @@ public class NetworkAppManager : MonoBehaviour
 		}
 		foreach (var projectile in projectiles)
 		{
-			stateData += string.Format("|{0};{1}",
+			sendMsg += string.Format("|{0};{1}",
 				projectile.Key.ToString(),
 				projectile.Value.EncodePosition()
 			);
 		}
-		return stateData;
+		return sendMsg;
 	}
 
 	private byte[] GetStateData()

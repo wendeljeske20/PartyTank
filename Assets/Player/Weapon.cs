@@ -44,7 +44,7 @@ public class Weapon : MonoBehaviour
 
 	public void SendShoot()
 	{
-		string msg = "Shoot|";
+		string msg = (int)Message.PLAYER_SHOOT + "|";
 		NUClient.SendReliable(new Packet(msg));
 	}
 

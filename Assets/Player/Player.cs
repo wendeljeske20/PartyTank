@@ -54,7 +54,8 @@ public class Player : MonoBehaviour, IDamagable
 		if (!NUClient.connected || !data.isLocal)
 			return;
 
-		string msg = string.Format("Inp|{0};{1}",
+		string msg = string.Format("{0}|{1};{2}",
+			(int)Message.PLAYER_INPUT,
 			EncodePositionInput(),
 			EncodeTowerRotationInput()
 		);
@@ -77,8 +78,12 @@ public class Player : MonoBehaviour, IDamagable
 
 	public void SendTakeDamage(int damage)
 	{
-		string msg = "TakeDamage|" + data.guid + ";" + damage;
-		NUClient.SendReliable(new Packet(msg));
+		TakeDamage(damage);
+
+		string sendMsg = (int)Message.PLAYER_TAKE_DAMAGE + "|" + data.guid.ToString() + ";" + damage;
+
+		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
+
 	}
 
 	private void UpdateHealthBar()

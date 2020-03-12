@@ -171,7 +171,11 @@ public class LobbyManager : MonoBehaviour
 			string sendMsg = ((int)Message.PLAYER_CONNECTED).ToString();
 			foreach (var pData in playerDatas)
 			{
-				sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.lobbyIndex);
+				sendMsg += string.Format("|{0};{1};{2}",
+					pData.Key.ToString(),
+					pData.Value.name,
+					pData.Value.lobbyIndex
+				);
 			}
 
 			Debug.Log("Send message: " + sendMsg);
@@ -181,7 +185,13 @@ public class LobbyManager : MonoBehaviour
 			foreach (var pData in playerDatas)
 			{
 				if (pData.Value.lobbyIndex != -1)
-					sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.lobbyIndex);
+				{
+					sendMsg += string.Format("|{0};{1};{2}",
+						pData.Key.ToString(),
+						pData.Value.name,
+						pData.Value.lobbyIndex
+					);
+				}
 			}
 
 			Debug.Log("Send message: " + sendMsg);
@@ -203,7 +213,11 @@ public class LobbyManager : MonoBehaviour
 			string sendMsg = ((int)Message.PLAYER_DISCONNECTED).ToString();
 			var pData = playerDatas[guid];
 
-			sendMsg += string.Format("|{0};{1};{2}", guid, pData.name, pData.lobbyIndex);
+			sendMsg += string.Format("|{0};{1};{2}",
+				guid,
+				pData.name,
+				pData.lobbyIndex
+			);
 
 			playerDatas.Remove(guid);
 
@@ -245,12 +259,17 @@ public class LobbyManager : MonoBehaviour
 			}
 
 
-
 			string sendMsg = ((int)Message.PLAYER_JOIN).ToString();
 			foreach (var pData in playerDatas)
 			{
 				if (pData.Value.lobbyIndex != -1)
-					sendMsg += string.Format("|{0};{1};{2}", pData.Key.ToString(), pData.Value.name, pData.Value.lobbyIndex);
+				{
+					sendMsg += string.Format("|{0};{1};{2}",
+						pData.Key.ToString(),
+						pData.Value.name,
+						pData.Value.lobbyIndex
+					);
+				}
 			}
 
 			Debug.Log("Send message: " + sendMsg);

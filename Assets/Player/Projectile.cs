@@ -77,14 +77,17 @@ public class Projectile : MonoBehaviour
 
 		damagable.SendTakeDamage(damage);
 		hittedDamagable = damagable;
-		//ToDestroy();
 		SendDestroy();
 	}
 
 	public void SendDestroy()
 	{
-		string msg = "DestroyProjectile|" + id;
-		NUClient.SendReliable(new Packet(msg));
+		NetworkAppManager.projectiles.Remove(id);
+		ToDestroy();
+
+		string sendMsg = (int)Message.DESTROY_PROJECTILE + "|" + id;
+
+		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 	}
 
 	public string EncodePosition()
