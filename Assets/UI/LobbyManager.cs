@@ -42,7 +42,7 @@ public class LobbyManager : MonoBehaviour
 		for (int i = 0; i < lobbyPanels.Length; i++)
 		{
 			int index = i;
-			lobbyPanels[i].joinButton.onClick.AddListener(() => Join((Team)(index + 1)));
+			lobbyPanels[i].joinButton.onClick.AddListener(() => Join((Team)(index)));
 		}
 
 		readyButton.onClick.AddListener(() => SendStartMatch());
@@ -129,7 +129,7 @@ public class LobbyManager : MonoBehaviour
 
 	private void PlayerDisconnectFromServer(Guid guid)
 	{
-		int index = (int)playerDatas[guid].team - 1;
+		int index = (int)playerDatas[guid].team;
 		lobbyPanels[index].nameText.text = "111";
 
 		playerDatas.Remove(guid);
@@ -203,7 +203,7 @@ public class LobbyManager : MonoBehaviour
 		{
 			string[] data = args[1].Split(';');
 			//Guid guid = new Guid(data[0]);
-			int index = (int)playerDatas[guid].team - 1;
+			int index = (int)playerDatas[guid].team;
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = "111";
@@ -236,14 +236,14 @@ public class LobbyManager : MonoBehaviour
 
 			if (lastTeam != Team.UNDEFINED)
 			{
-				PlayerLobbyPanel lastPlayerPanel = lobbyPanels[(int)lastTeam - 1];
+				PlayerLobbyPanel lastPlayerPanel = lobbyPanels[(int)lastTeam];
 				lastPlayerPanel.nameText.text = "111";
 				lastPlayerPanel.nameText.color = Color.white;
 				lastPlayerPanel.joinButton.gameObject.SetActive(true);
 			}
 
 			int index = int.Parse(data[1]);
-			PlayerLobbyPanel playerPanel = lobbyPanels[index - 1];
+			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = name;
 
 			if (guid == NUClient.guid)
@@ -369,13 +369,13 @@ public class LobbyManager : MonoBehaviour
 
 				if (lastTeam != Team.UNDEFINED)
 				{
-					PlayerLobbyPanel lastPlayerPanel = lobbyPanels[(int)lastTeam - 1];
+					PlayerLobbyPanel lastPlayerPanel = lobbyPanels[(int)lastTeam];
 					lastPlayerPanel.nameText.text = "111";
 					lastPlayerPanel.nameText.color = Color.white;
 					lastPlayerPanel.joinButton.gameObject.SetActive(true);
 				}
 
-				PlayerLobbyPanel playerPanel = lobbyPanels[(int)team - 1];
+				PlayerLobbyPanel playerPanel = lobbyPanels[(int)team];
 				playerPanel.nameText.text = name;
 				if (guid == NUClient.guid)
 				{
