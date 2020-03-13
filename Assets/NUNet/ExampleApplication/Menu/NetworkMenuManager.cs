@@ -45,8 +45,8 @@ namespace Game
 		{
 			NUClient.SetupBroadcast(NUUtilities.ListIPv4Addresses()[0]);
 			nameField.text = "GUESS " + UnityEngine.Random.Range(100, 1000).ToString();
-			ipAddressField.text = "192.168.0.4";
-			//ipAddressField.text = "191.4.232.155";
+			//ipAddressField.text = "192.168.0.4";
+			ipAddressField.text = "191.4.232.155";
 			portField.text = "25565";
 		}
 
@@ -111,8 +111,9 @@ namespace Game
 
 		public void ServerFound(BroadcastPacket brdPacket)
 		{
+			Debug.Log("FFF");
 			//Extract port from package
-			ushort port = ushort.Parse(brdPacket.packet.GetMessageData());
+			ushort port = 25565;
 			IPEndPoint endPoint = new IPEndPoint(brdPacket.origin, (int)port);
 
 			//Try to add server
@@ -130,7 +131,7 @@ namespace Game
 
 			Button connect = serverEntry.GetComponentInChildren<Button>();
 			connect.onClick.AddListener(() => { ConnectToServer(endPoint, serverEntry); });
-
+			Debug.Log("WWW");
 		}
 
 	}

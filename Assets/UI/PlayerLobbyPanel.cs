@@ -12,17 +12,4 @@ public class PlayerLobbyPanel : MonoBehaviour
 	
 }
 
-public class PlayerNetData
-{
-	public System.Guid guid;
 
-	public int id;
-
-	public string name;
-	
-	public int lobbyIndex;
-
-	public bool isLocal;
-
-	//public bool ready;
-}

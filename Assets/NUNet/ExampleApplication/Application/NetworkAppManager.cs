@@ -79,10 +79,10 @@ public class NetworkAppManager : MonoBehaviour
 		foreach (Guid guid in NUServer.GetConnectedClients())
 		{
 			PlayerNetData playerData = LobbyManager.playerDatas[guid];
-			int index = playerData.lobbyIndex;
 
-			if (index != -1)
+			if (playerData.team != Team.UNDEFINED)
 			{
+				int index = (int)playerData.team;
 				//Debug.Log("INDEX1  " + index);
 				Player player = GameObject.Instantiate(playerServerPrefab,
 					spawnPositions[index].position,
@@ -182,7 +182,7 @@ public class NetworkAppManager : MonoBehaviour
 
 					continue;
 				}
-				int index = LobbyManager.playerDatas[guid].lobbyIndex;
+				int index = (int)LobbyManager.playerDatas[guid].team;
 				Debug.Log("INDEX2  " + index);
 
 				player = GameObject.Instantiate(playerClientPrefab,

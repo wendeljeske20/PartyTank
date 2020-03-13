@@ -36,7 +36,6 @@ public class Player : MonoBehaviour, IDamagable
 
 	private void Update()
 	{
-		team = data.isLocal ? Team.PLAYER : Team.ENEMY;
 		weapon.team = team;
 
 		if (!NUClient.connected || !data.isLocal)
