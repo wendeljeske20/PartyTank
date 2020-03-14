@@ -42,7 +42,7 @@ public class LobbyManager : MonoBehaviour
 		for (int i = 0; i < lobbyPanels.Length; i++)
 		{
 			int index = i;
-			lobbyPanels[i].joinButton.onClick.AddListener(() => Join((Team)(index)));
+			lobbyPanels[i].joinButton.onClick.AddListener(() => Join(index));
 		}
 
 		readyButton.onClick.AddListener(() => SendStartMatch());
@@ -78,7 +78,7 @@ public class LobbyManager : MonoBehaviour
 			{
 				PlayerNetData pData = playerDatas[guids[i]];
 
-				text.text = pData.name + "     " + guids[i] + "     " + pData.team;
+				text.text = pData.name + "     " + guids[i] + "     " + pData.lobbyIndex;
 			}
 			else
 			{
@@ -110,9 +110,9 @@ public class LobbyManager : MonoBehaviour
 		//NUClient.SendReliable(packet);
 	}
 
-	private void Join(Team team)
+	private void Join(int index)
 	{
-		Packet packet = new Packet((int)Message.PLAYER_JOIN + "|" + playerName + ";" + team.ToString("d"));
+		Packet packet = new Packet((int)Message.PLAYER_JOIN + "|" + playerName + ";" + index);
 		NUClient.SendReliable(packet);
 	}
 
@@ -129,7 +129,7 @@ public class LobbyManager : MonoBehaviour
 
 	private void PlayerDisconnectFromServer(Guid guid)
 	{
-		int index = (int)playerDatas[guid].team;
+		int index = playerDatas[guid].lobbyIndex;
 		lobbyPanels[index].nameText.text = "111";
 
 		playerDatas.Remove(guid);
@@ -157,7 +157,7 @@ public class LobbyManager : MonoBehaviour
 
 			PlayerNetData playerData = new PlayerNetData();
 			playerData.name = name;
-			playerData.team = Team.UNDEFINED;
+			playerData.lobbyIndex = -1;
 
 			//Debug.Log("guid   " + clientGuid);
 			if (playerDatas.ContainsKey(guid))
@@ -174,7 +174,7 @@ public class LobbyManager : MonoBehaviour
 				sendMsg += string.Format("|{0};{1};{2}",
 					pData.Key.ToString(),
 					pData.Value.name,
-					pData.Value.team.ToString("d")
+					pData.Value.lobbyIndex
 				);
 			}
 
@@ -184,12 +184,12 @@ public class LobbyManager : MonoBehaviour
 			sendMsg = Message.PLAYER_JOIN.ToString("d");
 			foreach (var pData in playerDatas)
 			{
-				if (pData.Value.team != Team.UNDEFINED)
+				if (pData.Value.lobbyIndex != -1)
 				{
 					sendMsg += string.Format("|{0};{1};{2}",
 						pData.Key.ToString(),
 						pData.Value.name,
-						pData.Value.team.ToString("d")
+						pData.Value.lobbyIndex
 					);
 				}
 			}
@@ -203,7 +203,7 @@ public class LobbyManager : MonoBehaviour
 		{
 			string[] data = args[1].Split(';');
 			//Guid guid = new Guid(data[0]);
-			int index = (int)playerDatas[guid].team;
+			int index = playerDatas[guid].lobbyIndex;
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = "111";
@@ -216,7 +216,7 @@ public class LobbyManager : MonoBehaviour
 			sendMsg += string.Format("|{0};{1};{2}",
 				guid,
 				pData.name,
-				pData.team.ToString("d")
+				pData.lobbyIndex
 			);
 
 			playerDatas.Remove(guid);
@@ -231,21 +231,18 @@ public class LobbyManager : MonoBehaviour
 			string[] data = args[1].Split(';');
 
 			string name = data[0];
-			Team team = (Team)(int.Parse(data[1]));
-			Team lastTeam = playerDatas[guid].team;
+			int index = int.Parse(data[1]);
 
-			if (lastTeam != Team.UNDEFINED)
+			int lastIndex = playerDatas[guid].lobbyIndex;
+			if (lastIndex != -1)
 			{
-				PlayerLobbyPanel lastPlayerPanel = lobbyPanels[(int)lastTeam];
-				lastPlayerPanel.nameText.text = "111";
-				lastPlayerPanel.nameText.color = Color.white;
-				lastPlayerPanel.joinButton.gameObject.SetActive(true);
+				lobbyPanels[lastIndex].nameText.text = "111";
+				lobbyPanels[lastIndex].nameText.color = Color.white;
+				lobbyPanels[lastIndex].joinButton.gameObject.SetActive(true);
 			}
 
-			int index = int.Parse(data[1]);
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
 			playerPanel.nameText.text = name;
-
 			if (guid == NUClient.guid)
 			{
 				playerPanel.nameText.color = Utility.HtmlToColor("#0099FF");
@@ -253,7 +250,7 @@ public class LobbyManager : MonoBehaviour
 
 			playerPanel.joinButton.gameObject.SetActive(false);
 
-			playerDatas[guid].team = team;
+			playerDatas[guid].lobbyIndex = index;
 
 
 			if (NUClient.connected && guid == NUClient.guid) //Is Server Player
@@ -265,12 +262,12 @@ public class LobbyManager : MonoBehaviour
 			string sendMsg = Message.PLAYER_JOIN.ToString("d");
 			foreach (var pData in playerDatas)
 			{
-				if (pData.Value.team != Team.UNDEFINED)
+				if (pData.Value.lobbyIndex != -1)
 				{
 					sendMsg += string.Format("|{0};{1};{2}",
 						pData.Key.ToString(),
 						pData.Value.name,
-						pData.Value.team.ToString("d")
+						pData.Value.lobbyIndex
 					);
 				}
 			}
@@ -305,7 +302,7 @@ public class LobbyManager : MonoBehaviour
 
 				Guid guid = new Guid(data[0]);
 				string name = data[1];
-				Team team = (Team)(int.Parse(data[2]));
+				int index = int.Parse(data[2]);
 
 
 				//PlayerLobbyPanel playerPanel = lobbyPanels[index];
@@ -313,7 +310,7 @@ public class LobbyManager : MonoBehaviour
 
 				PlayerNetData playerData = new PlayerNetData();
 				playerData.name = name;
-				playerData.team = team;
+				playerData.lobbyIndex = index;
 
 				//Might be a reconnected player
 				//if (playerDatas.TryGetValue(guid, out playerData))
@@ -343,12 +340,11 @@ public class LobbyManager : MonoBehaviour
 
 			Guid guid = new Guid(data[0]);
 			//string name = data[1];
-			Team team = playerDatas[guid].team;
-			int index = (int)team; //int.Parse(data[2]);
+			int index = playerDatas[guid].lobbyIndex; //int.Parse(data[2]);
 
 
 			PlayerLobbyPanel playerPanel = lobbyPanels[index];
-			playerPanel.nameText.text = "...";
+			playerPanel.nameText.text = "111";
 			playerPanel.nameText.color = Color.white;
 			playerPanel.joinButton.gameObject.SetActive(true);
 
@@ -361,21 +357,18 @@ public class LobbyManager : MonoBehaviour
 				string[] data = args[i].Split(';');
 
 				Guid guid = new Guid(data[0]);
+				int index = int.Parse(data[2]);
 				string name = data[1];
 
-				Team team = (Team)(int.Parse(data[2]));
-				Team lastTeam = playerDatas[guid].team;
-
-
-				if (lastTeam != Team.UNDEFINED)
+				int lastIndex = playerDatas[guid].lobbyIndex;
+				if (lastIndex != -1)
 				{
-					PlayerLobbyPanel lastPlayerPanel = lobbyPanels[(int)lastTeam];
-					lastPlayerPanel.nameText.text = "111";
-					lastPlayerPanel.nameText.color = Color.white;
-					lastPlayerPanel.joinButton.gameObject.SetActive(true);
+					lobbyPanels[lastIndex].nameText.text = "111";
+					lobbyPanels[lastIndex].nameText.color = Color.white;
+					lobbyPanels[lastIndex].joinButton.gameObject.SetActive(true);
 				}
 
-				PlayerLobbyPanel playerPanel = lobbyPanels[(int)team];
+				PlayerLobbyPanel playerPanel = lobbyPanels[index];
 				playerPanel.nameText.text = name;
 				if (guid == NUClient.guid)
 				{
@@ -383,7 +376,7 @@ public class LobbyManager : MonoBehaviour
 				}
 				playerPanel.joinButton.gameObject.SetActive(false);
 
-				playerDatas[guid].team = team;
+				playerDatas[guid].lobbyIndex = index;
 
 				//Might be a reconnected player
 				//if (playerDatas.TryGetValue(guid, out playerData))

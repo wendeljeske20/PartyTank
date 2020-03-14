@@ -79,10 +79,10 @@ public class NetworkAppManager : MonoBehaviour
 		foreach (Guid guid in NUServer.GetConnectedClients())
 		{
 			PlayerNetData playerData = LobbyManager.playerDatas[guid];
+			int index = playerData.lobbyIndex;
 
-			if (playerData.team != Team.UNDEFINED)
+			if (index != -1)
 			{
-				int index = (int)playerData.team;
 				//Debug.Log("INDEX1  " + index);
 				Player player = GameObject.Instantiate(playerServerPrefab,
 					spawnPositions[index].position,
@@ -130,7 +130,7 @@ public class NetworkAppManager : MonoBehaviour
 			if (players.TryGetValue(guid, out player))
 			{
 				player.DecodeVelocity(data[0]);
-				player.DecodeTowerRotation(data[1]);
+				player.DecodeTargetPosition(data[1]);
 			}
 		}
 		else if (msgID == (int)Message.PLAYER_SHOOT)
@@ -182,7 +182,7 @@ public class NetworkAppManager : MonoBehaviour
 
 					continue;
 				}
-				int index = (int)LobbyManager.playerDatas[guid].team;
+				int index = LobbyManager.playerDatas[guid].lobbyIndex;
 				Debug.Log("INDEX2  " + index);
 
 				player = GameObject.Instantiate(playerClientPrefab,
@@ -212,7 +212,7 @@ public class NetworkAppManager : MonoBehaviour
 				{
 					player.DecodePosition(data[1]);
 					player.DecodeRotation(data[2]);
-					player.DecodeTowerRotation(data[3]);
+					player.DecodeTargetPosition(data[3]);
 				}
 			}
 			for (int j = players.Count + 1; j < args.Length; j++)
@@ -316,7 +316,7 @@ public class NetworkAppManager : MonoBehaviour
 				player.Key.ToString(),
 				player.Value.EncodePosition(),
 				player.Value.EncodeRotation(),
-				player.Value.EncodeTowerRotation()
+				player.Value.EncodeTargetPosition()
 			);
 		}
 		foreach (var projectile in projectiles)

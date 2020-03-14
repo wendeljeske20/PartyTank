@@ -8,6 +8,8 @@ public class PlayerNetData
 
 	public string name;
 
+	public int lobbyIndex;
+
 	public Team team;
 
 	public bool isLocal;

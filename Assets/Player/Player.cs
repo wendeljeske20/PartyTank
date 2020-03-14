@@ -26,6 +26,8 @@ public class Player : MonoBehaviour, IDamagable
 
 	public Weapon weapon;
 
+	private Vector3 targetPosition;
+
 	private Rigidbody rb;
 	private void Awake()
 	{
@@ -37,6 +39,8 @@ public class Player : MonoBehaviour, IDamagable
 	private void Update()
 	{
 		weapon.team = team;
+
+
 
 		if (!NUClient.connected || !data.isLocal)
 			return;
@@ -50,16 +54,23 @@ public class Player : MonoBehaviour, IDamagable
 	}
 	private void FixedUpdate()
 	{
+		Vector3 lookDirection = (targetPosition - tower.transform.position).normalized;
+		LookAt(tower, lookDirection);
+
 		if (!NUClient.connected || !data.isLocal)
 			return;
+
+		targetPosition = GetTowerTargetPosition();
 
 		string msg = string.Format("{0}|{1};{2}",
 			(int)Message.PLAYER_INPUT,
 			EncodePositionInput(),
-			EncodeTowerRotationInput()
+			EncodeTargetPosition()
 		);
 
 		NUClient.SendUnreliable(new Packet(msg));
+
+
 	}
 
 	public void TakeDamage(int damage)
@@ -126,18 +137,27 @@ public class Player : MonoBehaviour, IDamagable
 		return NetUtility.EncodeQuaternion(tower.transform.rotation);
 	}
 
-	public string EncodeTowerRotationInput()
+	public string EncodeTargetPosition()
 	{
-		Vector3 direction = GetTowerLookDirection();
-		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-		Quaternion rotation = Quaternion.Slerp(tower.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
-
-		return NetUtility.EncodeQuaternion(rotation);
+		return NetUtility.EncodeVector(targetPosition);
 	}
 
-	public void DecodeTowerRotation(string msg)
+	public void DecodeTargetPosition(string msg)
 	{
-		tower.transform.rotation = NetUtility.DecodeQuaternion(msg);
+		targetPosition = NetUtility.DecodeVector(msg);
+	}
+
+	private Vector3 GetTowerTargetPosition()
+	{
+		Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+		Plane groundPlane = new Plane(Vector3.up, new Vector3(0, tower.transform.position.y, 0));
+		float rayLenght;
+		Vector3 pointToLook = Vector3.one;
+		if (groundPlane.Raycast(cameraRay, out rayLenght))
+		{
+			pointToLook = new Vector3(cameraRay.GetPoint(rayLenght).x, cameraRay.GetPoint(rayLenght).y, cameraRay.GetPoint(rayLenght).z - 0.5f);
+		}
+		return pointToLook;
 	}
 
 	private Vector3 GetTowerLookDirection()
