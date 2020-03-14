@@ -12,7 +12,7 @@ public class Player : MonoBehaviour, IDamagable
 	public PlayerNetData data;
 
 	public Image healthBar;
-	public Team team { get; set; }
+	public Team team { get => data.team; set => data.team = value; }
 
 	public float maxHealth = 100;
 
