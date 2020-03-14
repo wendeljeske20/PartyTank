@@ -245,13 +245,14 @@ public class NetworkAppManager : MonoBehaviour
 			if (players.TryGetValue(guid, out player))
 			{
 				Projectile projectile = player.weapon.Shoot();
+				Destroy(projectile.GetComponent<Rigidbody>());
 				int id = int.Parse(data[1]);
 				projectile.id = id;
 				projectiles.Add(id, projectile);
 
 				if (guid == NUClient.guid)
 				{
-					Destroy(projectile.GetComponent<Rigidbody>());
+					
 				}
 			}
 		}

@@ -210,10 +210,10 @@ public class LobbyManager : MonoBehaviour
 			playerPanel.nameText.color = Color.white;
 			playerPanel.joinButton.gameObject.SetActive(true);
 
-			string sendMsg = Message.PLAYER_DISCONNECTED.ToString("d");
 			var pData = playerDatas[guid];
 
-			sendMsg += string.Format("|{0};{1};{2}",
+			string sendMsg = string.Format("{0}|{1};{2};{3}",
+				Message.PLAYER_DISCONNECTED.ToString("d"),
 				guid,
 				pData.name,
 				pData.lobbyIndex
