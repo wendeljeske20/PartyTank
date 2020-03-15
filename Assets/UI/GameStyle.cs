@@ -11,7 +11,6 @@ public class GameStyle : ScriptableObject
 
     public GameStyle()
     {
-        Debug.Log("instance");
         if (Instance == null)
         {
             Instance = this;

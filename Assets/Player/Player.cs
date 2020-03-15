@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using NUNet;
-using System.Globalization;
 using System;
 
 public class Player : MonoBehaviour, IDamagable
@@ -28,7 +27,10 @@ public class Player : MonoBehaviour, IDamagable
 
 	private Vector3 targetPosition;
 
+	private Quaternion rotationToTarget;
+
 	private Rigidbody rb;
+
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody>();
@@ -54,8 +56,20 @@ public class Player : MonoBehaviour, IDamagable
 	}
 	private void FixedUpdate()
 	{
+		
+		//LookAt(tower, lookDirection);
+
+		
+
+		Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * moveSpeed;
+		LookAt(gameObject, input, 5);
+
 		Vector3 lookDirection = (targetPosition - tower.transform.position).normalized;
-		LookAt(tower, lookDirection);
+		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(lookDirection.x, 0, lookDirection.z));
+		rotationToTarget = Quaternion.Lerp(rotationToTarget, lookRotation, rotationSpeed * Time.deltaTime);
+		//"Ignora" a rotação do objeto pai e rotaciona em direção ao alvo.
+		tower.transform.localRotation = rotationToTarget * Quaternion.Inverse(gameObject.transform.rotation); 
+	
 
 		if (!NUClient.connected || !data.isLocal)
 			return;
@@ -175,7 +189,7 @@ public class Player : MonoBehaviour, IDamagable
 		return direction;
 	}
 
-	protected void LookAt(GameObject obj, Vector3 direction)
+	protected void LookAt(GameObject obj, Vector3 direction, float rotationSpeed)
 	{
 		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
 		obj.transform.rotation = Quaternion.Slerp(obj.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);

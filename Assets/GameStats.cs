@@ -5,7 +5,7 @@ using UnityEngine;
 public static class GameStats
 {
 	public static List<string> gameModeNames;
-	public static GameMode gameMode = GameMode.TEAM_2V2;
+	public static GameMode gameMode = GameMode.FREE_FOR_ALL;
 
 	public static List<string> arenaNames;
 	public static int arenaIndex = 1;

@@ -311,12 +311,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 011c0f5fa8fb5934683ca750d2834cad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  data:
+    id: 0
+    name: 
+    lobbyIndex: 0
+    team: 0
+    isLocal: 0
   healthBar: {fileID: 4182750527203235759}
   maxHealth: 100
   currentHealth: 0
   moveSpeed: 10
   rotationSpeed: 5
-  isLocal: 0
   tower: {fileID: 2964037555390674508}
   weapon: {fileID: 9120322163283799434}
 --- !u!65 &8251281292997106643

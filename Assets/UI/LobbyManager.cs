@@ -129,7 +129,19 @@ public class LobbyManager : MonoBehaviour
 
 		for (int i = 0; i < teamPanels.Length; i++)
 		{
-			teamPanels[i].color = GameStyle.Instance.teamColors[i];
+			int colorIndex = i;
+
+			if(GameStats.gameMode != GameMode.FREE_FOR_ALL)
+			{
+				colorIndex = (int)(Mathf.Floor(i / 2f));
+			}
+			
+			teamPanels[i].color = GameStyle.Instance.teamColors[colorIndex];
+		}
+
+		foreach(var playerData in playerDatas)
+		{
+			playerData.Value.UpdateTeam();
 		}
 
 		//if (GameStats.gameMode == GameMode.FREE_FOR_ALL)
