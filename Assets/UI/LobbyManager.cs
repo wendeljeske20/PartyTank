@@ -6,22 +6,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using NUNet;
 using UnityEngine.SceneManagement;
+using Game;
 
 public class LobbyManager : MonoBehaviour
 {
-	public enum GameMode
-	{
-		FREE_FOR_ALL,
-		TEAM_2V2,
-	}
-
-	public static GameMode gameMode = GameMode.TEAM_2V2;
-
 	public bool allReady;
 	public static string playerName = "123";
 	public static bool isHost;
-
-	public Transform teamPanel;
 
 	public Transform spectatorsContent;
 
@@ -32,7 +23,9 @@ public class LobbyManager : MonoBehaviour
 
 	public static Dictionary<Guid, PlayerNetData> playerDatas = new Dictionary<Guid, PlayerNetData>();
 
+	public GameObject teamsContent;
 
+	public Image[] teamPanels;
 
 	private void Awake()
 	{
@@ -57,11 +50,6 @@ public class LobbyManager : MonoBehaviour
 
 		readyButton.gameObject.SetActive(false);
 		gameObject.SetActive(false);
-	}
-
-	private void OnApplicationQuit()
-	{
-		Disconnect();
 	}
 
 	private void Update()
@@ -133,6 +121,41 @@ public class LobbyManager : MonoBehaviour
 	private void StartMatch()
 	{
 		SceneManager.LoadScene(1);
+	}
+
+	public void SetGameMode(int index)
+	{
+		GameStats.gameMode = (GameMode)index;
+
+		for (int i = 0; i < teamPanels.Length; i++)
+		{
+			teamPanels[i].color = GameStyle.Instance.teamColors[i];
+		}
+
+		//if (GameStats.gameMode == GameMode.FREE_FOR_ALL)
+		//{
+		//	teamPanels[0].transform.GetChild(3).SetParent(teamPanels[2].transform);
+		//	teamPanels[1].transform.GetChild(3).SetParent(teamPanels[3].transform);
+		//	teamPanels[2].SetActive(true);
+		//	teamPanels[3].SetActive(true);
+		//}
+		//else if (GameStats.gameMode == GameMode.TEAM_2V2)
+		//{
+		//	teamPanels[2].transform.GetChild(1).SetParent(teamPanels[0].transform);
+		//	teamPanels[2].SetActive(false);
+		//	teamPanels[3].transform.GetChild(1).SetParent(teamPanels[1].transform);
+		//	teamPanels[3].SetActive(false);
+		//}
+
+		//teamsContent.GetComponent<HorizontalLayoutGroup>().enabled = false;
+		//teamsContent.GetComponent<HorizontalLayoutGroup>().enabled = true;
+
+
+	}
+
+	public void SetRoundTime(int index)
+	{
+		GameStats.gameMode = (GameMode)index;
 	}
 
 	private void PlayerDisconnectFromServer(Guid guid)
@@ -366,11 +389,13 @@ public class LobbyManager : MonoBehaviour
 
 				PlayerLobbyPanel playerPanel = lobbyPanels[index];
 				playerPanel.nameText.text = name;
+				playerPanel.joinButton.gameObject.SetActive(false);
+
 				if (guid == NUClient.guid)
 				{
 					playerPanel.nameText.color = Utility.HtmlToColor("#0099FF");
 				}
-				playerPanel.joinButton.gameObject.SetActive(false);
+
 
 
 				playerDatas[guid].lobbyIndex = index;
@@ -407,6 +432,11 @@ public class LobbyManager : MonoBehaviour
 		{
 			Debug.LogError(msg);
 		}
+	}
+
+	private void OnApplicationQuit()
+	{
+		Disconnect();
 	}
 
 

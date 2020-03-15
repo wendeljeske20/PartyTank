@@ -30,8 +30,8 @@ public class PlayerNetData
 	public void UpdateTeam()
 	{
 		team = (Team)lobbyIndex;
-	
-		if (LobbyManager.gameMode == LobbyManager.GameMode.FREE_FOR_ALL)
+
+		if (GameStats.gameMode == GameMode.FREE_FOR_ALL)
 			return;
 
 		team = (Team)(Mathf.Floor(lobbyIndex / 2f));
