@@ -56,20 +56,21 @@ public class Player : MonoBehaviour, IDamagable
 	}
 	private void FixedUpdate()
 	{
-		
+
 		//LookAt(tower, lookDirection);
 
-		
+
 
 		Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * moveSpeed;
-		LookAt(gameObject, input, 5);
+		if (input.magnitude > 0.1f)
+			LookAt(gameObject, input, 5);
 
 		Vector3 lookDirection = (targetPosition - tower.transform.position).normalized;
 		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(lookDirection.x, 0, lookDirection.z));
 		rotationToTarget = Quaternion.Lerp(rotationToTarget, lookRotation, rotationSpeed * Time.deltaTime);
 		//"Ignora" a rotação do objeto pai e rotaciona em direção ao alvo.
-		tower.transform.localRotation = rotationToTarget * Quaternion.Inverse(gameObject.transform.rotation); 
-	
+		tower.transform.localRotation = rotationToTarget * Quaternion.Inverse(gameObject.transform.rotation);
+
 
 		if (!NUClient.connected || !data.isLocal)
 			return;
@@ -191,7 +192,22 @@ public class Player : MonoBehaviour, IDamagable
 
 	protected void LookAt(GameObject obj, Vector3 direction, float rotationSpeed)
 	{
+		direction.Normalize();
+		Vector3 rightDir = Vector3.forward;
 		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-		obj.transform.rotation = Quaternion.Slerp(obj.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+		Quaternion rotation = Quaternion.Slerp(obj.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+
+		
+		float dirIndicator = Vector3.Dot(rightDir, direction);
+		Debug.Log(dirIndicator);
+
+		if (dirIndicator > 0) // Andando pra frente
+		{
+			obj.transform.rotation = rotation;
+		}
+		else if(dirIndicator < 0) // Andando pra trás
+		{
+			obj.transform.rotation = Quaternion.Inverse(rotation);
+		}
 	}
 }

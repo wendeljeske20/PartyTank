@@ -69,7 +69,7 @@ public class NetworkAppManager : MonoBehaviour
 			string sendMsg = GetStateMsg();
 			Packet stateData = new Packet(GetStateMsg(), NUServer.GetConnectedClients());
 			NUServer.SendUnreliable(stateData);
-			Debug.Log(sendMsg.Length + "|||||" + sendMsg);
+			//Debug.Log(sendMsg.Length + "|||||" + sendMsg);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class NetworkAppManager : MonoBehaviour
 
 			if (index != -1)
 			{
-				//Debug.Log("INDEX1  " + index);
+				////Debug.Log("INDEX1  " + index);
 				Player player = GameObject.Instantiate(playerServerPrefab,
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
@@ -150,7 +150,7 @@ public class NetworkAppManager : MonoBehaviour
 
 		if (packet.id >= 0)
 		{
-			Debug.LogError(msg);
+			//Debug.LogError(msg);
 		}
 	}
 
@@ -160,7 +160,7 @@ public class NetworkAppManager : MonoBehaviour
 			return;
 
 		string msg = packet.GetMessageData();
-		Debug.Log("Received message: " + msg);
+		//Debug.Log("Received message: " + msg);
 		string[] args = msg.Split('|');
 		int msgID;
 		int.TryParse(args[0], out msgID);
@@ -182,7 +182,7 @@ public class NetworkAppManager : MonoBehaviour
 					continue;
 				}
 				int index = LobbyManager.playerDatas[guid].lobbyIndex;
-				Debug.Log("INDEX2  " + index);
+				//Debug.Log("INDEX2  " + index);
 
 				player = GameObject.Instantiate(playerClientPrefab,
 					spawnPositions[index].position,
@@ -280,7 +280,7 @@ public class NetworkAppManager : MonoBehaviour
 
 		if (packet.id >= 0)
 		{
-			Debug.LogError(msg);
+			//Debug.LogError(msg);
 		}
 	}
 
