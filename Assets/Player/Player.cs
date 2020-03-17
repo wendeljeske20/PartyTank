@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 using NUNet;
 using System;
+using Unity.Collections;
 
 public class Player : MonoBehaviour, IDamagable
 {
@@ -21,6 +22,8 @@ public class Player : MonoBehaviour, IDamagable
 
 	public float rotationSpeed = 5;
 
+	public float towerRotationSpeed = 7;
+
 	public GameObject tower;
 
 	public Weapon weapon;
@@ -28,6 +31,8 @@ public class Player : MonoBehaviour, IDamagable
 	private Vector3 targetPosition;
 
 	private Quaternion rotationToTarget;
+
+	private Vector3 input;
 
 	private Rigidbody rb;
 
@@ -56,36 +61,39 @@ public class Player : MonoBehaviour, IDamagable
 	}
 	private void FixedUpdate()
 	{
+		if (LobbyManager.isHost)
+		{
+			rb.velocity = input;
 
-		//LookAt(tower, lookDirection);
-
-
-
-		Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * moveSpeed;
-		if (input.magnitude > 0.1f)
-			LookAt(gameObject, input, 5);
+			if (input.magnitude > 0.1f)
+			{
+				LookAt(gameObject, input, rotationSpeed);
+			}
+		}
 
 		Vector3 lookDirection = (targetPosition - tower.transform.position).normalized;
 		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(lookDirection.x, 0, lookDirection.z));
-		rotationToTarget = Quaternion.Lerp(rotationToTarget, lookRotation, rotationSpeed * Time.deltaTime);
+		rotationToTarget = Quaternion.Lerp(rotationToTarget, lookRotation, towerRotationSpeed * Time.deltaTime);
 		//"Ignora" a rotação do objeto pai e rotaciona em direção ao alvo.
 		tower.transform.localRotation = rotationToTarget * Quaternion.Inverse(gameObject.transform.rotation);
-
 
 		if (!NUClient.connected || !data.isLocal)
 			return;
 
+		input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized * moveSpeed;
+
 		targetPosition = GetTowerTargetPosition();
 
-		string msg = string.Format("{0}|{1};{2}",
-			(int)Message.PLAYER_INPUT,
-			EncodePositionInput(),
-			EncodeTargetPosition()
-		);
+		if (!LobbyManager.isHost)
+		{
+			string msg = string.Format("{0}|{1};{2}",
+				(int)Message.PLAYER_INPUT,
+				EncodePositionInput(),
+				EncodeTargetPosition()
+			);
 
-		NUClient.SendUnreliable(new Packet(msg));
-
-
+			NUClient.SendUnreliable(new Packet(msg));
+		}
 	}
 
 	public void TakeDamage(int damage)
@@ -108,7 +116,6 @@ public class Player : MonoBehaviour, IDamagable
 		string sendMsg = (int)Message.PLAYER_TAKE_DAMAGE + "|" + data.guid.ToString() + ";" + damage;
 
 		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
-
 	}
 
 	private void UpdateHealthBar()
@@ -116,20 +123,24 @@ public class Player : MonoBehaviour, IDamagable
 		healthBar.fillAmount = currentHealth / maxHealth;
 	}
 
-	public void DecodeVelocity(string msg)
+	//public void DecodeVelocity(string msg)
+	//{
+	//	rb.velocity = NetUtility.DecodeVector(msg);
+	//}
+
+	public string EncodePositionInput()
 	{
-		rb.velocity = NetUtility.DecodeVector(msg);
+		return NetUtility.EncodeVector(input);
+	}
+
+	public void DecodePositionInput(string msg)
+	{
+		input = NetUtility.DecodeVector(msg);
 	}
 
 	public string EncodePosition()
 	{
 		return NetUtility.EncodeVector(transform.position);
-	}
-
-	private string EncodePositionInput()
-	{
-		Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * moveSpeed;
-		return NetUtility.EncodeVector(input);
 	}
 
 	public void DecodePosition(string msg)
@@ -145,11 +156,6 @@ public class Player : MonoBehaviour, IDamagable
 	public void DecodeRotation(string msg)
 	{
 		transform.rotation = NetUtility.DecodeQuaternion(msg);
-	}
-
-	public string EncodeTowerRotation()
-	{
-		return NetUtility.EncodeQuaternion(tower.transform.rotation);
 	}
 
 	public string EncodeTargetPosition()
@@ -193,21 +199,35 @@ public class Player : MonoBehaviour, IDamagable
 	protected void LookAt(GameObject obj, Vector3 direction, float rotationSpeed)
 	{
 		direction.Normalize();
-		Vector3 rightDir = Vector3.forward;
-		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-		Quaternion rotation = Quaternion.Slerp(obj.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+		//Debug.Log(direction);
+		//Vector3 forward = transform.forward;
+		//Vector3 right =   transform.right;
 
-		
-		float dirIndicator = Vector3.Dot(rightDir, direction);
-		Debug.Log(dirIndicator);
 
-		if (dirIndicator > 0) // Andando pra frente
+
+		//float angle = Vector3.SignedAngle(right, direction, Vector3.up); //Vector3.Dot(rightDir, direction);
+		//float dotF = Vector3.Dot(forward, direction);
+		//float dotR = Vector3.Dot(right, direction);
+		//Debug.Log("dot: " + dotF + " dot2: " + dotR);
+
+		//if (dotR > 0 && dotF > 0 || dotR < 0 && dotF < 0) 
+		//if (direction.x > 0 && direction.z > 0 || direction.x < 0 && direction.z < 0) 
+		//if(dotR > 0)
 		{
+			Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+			//Quaternion inverse = Quaternion.LookRotation(obj.transform.forward);
+			//Debug.Log(obj.transform.rotation + "      " + inverse);
+			Quaternion rotation = Quaternion.Slerp(obj.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
 			obj.transform.rotation = rotation;
 		}
-		else if(dirIndicator < 0) // Andando pra trás
-		{
-			obj.transform.rotation = Quaternion.Inverse(rotation);
-		}
+		//else if (dotR < 0 && dotF > 0 || dotR > 0 && dotF < 0)
+		//else if(direction.x < 0 && direction.z > 0 || direction.x > 0 && direction.z < 0)
+		//else if (dotR < 0)
+		//{
+		//	Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+		//	Quaternion inverse = Quaternion.LookRotation(-obj.transform.forward);
+		//	Quaternion rotation = Quaternion.Slerp(inverse, lookRotation, 2 * Time.deltaTime);
+		//	obj.transform.rotation = rotation;
+		//}
 	}
 }

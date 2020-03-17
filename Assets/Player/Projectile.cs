@@ -4,6 +4,7 @@ using UnityEngine;
 using NaughtyAttributes;
 using System;
 using NUNet;
+using UnityEngine.Tilemaps;
 
 public class Projectile : MonoBehaviour
 {
@@ -11,10 +12,12 @@ public class Projectile : MonoBehaviour
 	public Team team;
 
 	[BoxGroup("Properties")]
-	public float moveSpeed;
+	public float moveSpeed = 5;
 
 	[BoxGroup("Properties")]
-	public int damage;
+	public int damage = 10;
+
+	public float duration = 10;
 
 	[HideInInspector]
 	public Rigidbody rb;
@@ -30,9 +33,9 @@ public class Projectile : MonoBehaviour
 
 	public IDamagable hittedDamagable;
 
-	private float timer;
-
 	public int id;
+
+	private Vector3 lastVelocity;
 
 	private void Awake()
 	{
@@ -46,23 +49,31 @@ public class Projectile : MonoBehaviour
 
 	protected virtual void Update()
 	{
-		//float distance = (transform.position - spawnPosition).sqrMagnitude;
+		if (!NUClient.connected || !LobbyManager.isHost)
+			return;
 
-		//if (distance >= attackRange * attackRange)
-		//{
-		//	ToDestroy();
-		//}
-		timer += Time.deltaTime;
+		duration -= Time.deltaTime;
+		if (duration <= 0)
+		{
+			SendDestroy();
+		}
 
 		//if (timer > 0.05f)
 		canDestroy = true;
+	}
+
+	private void FixedUpdate()
+	{
+		if (!NUClient.connected || !LobbyManager.isHost)
+			return;
+
+		lastVelocity = rb.velocity;
 	}
 
 	public void ToDestroy()
 	{
 		Destroy(gameObject);
 		OnHit?.Invoke();
-
 	}
 
 	private void OnTriggerEnter(Collider other)
@@ -80,6 +91,13 @@ public class Projectile : MonoBehaviour
 		SendDestroy();
 	}
 
+	private void OnCollisionEnter(Collision collision)
+	{
+		foreach (ContactPoint contact in collision.contacts)
+		{
+			rb.velocity = Vector3.Reflect(lastVelocity, contact.normal);
+		}
+	}
 	public void SendDestroy()
 	{
 		NetworkAppManager.projectiles.Remove(id);

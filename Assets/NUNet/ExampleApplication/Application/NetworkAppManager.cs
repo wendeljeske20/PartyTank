@@ -22,10 +22,7 @@ public class NetworkAppManager : MonoBehaviour
 	public static Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
 
 	[SerializeField]
-	private Player playerClientPrefab;
-
-	[SerializeField]
-	private Player playerServerPrefab;
+	private Player playerPrefab;
 
 	private void Awake()
 	{
@@ -83,7 +80,7 @@ public class NetworkAppManager : MonoBehaviour
 			if (index != -1)
 			{
 				////Debug.Log("INDEX1  " + index);
-				Player player = GameObject.Instantiate(playerServerPrefab,
+				Player player = GameObject.Instantiate(playerPrefab,
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
@@ -128,7 +125,7 @@ public class NetworkAppManager : MonoBehaviour
 			Player player;
 			if (players.TryGetValue(guid, out player))
 			{
-				player.DecodeVelocity(data[0]);
+				player.DecodePositionInput(data[0]);
 				player.DecodeTargetPosition(data[1]);
 			}
 		}
@@ -184,7 +181,7 @@ public class NetworkAppManager : MonoBehaviour
 				int index = LobbyManager.playerDatas[guid].lobbyIndex;
 				//Debug.Log("INDEX2  " + index);
 
-				player = GameObject.Instantiate(playerClientPrefab,
+				player = GameObject.Instantiate(playerPrefab,
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
@@ -251,7 +248,7 @@ public class NetworkAppManager : MonoBehaviour
 
 				if (guid == NUClient.guid)
 				{
-					
+
 				}
 			}
 		}

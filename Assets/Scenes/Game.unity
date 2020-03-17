@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -161,9 +161,7 @@ MonoBehaviour:
   - {fileID: 1372230570}
   - {fileID: 1340248946}
   - {fileID: 1781957116}
-  playerClientPrefab: {fileID: 8575285455300593517, guid: 5b93f126f63fc1648a408fb4b2dd8839,
-    type: 3}
-  playerServerPrefab: {fileID: 3371428664089973951, guid: 3b88fa330a281dd4b815d7c68c836632,
+  playerPrefab: {fileID: 3371428664089973951, guid: 3b88fa330a281dd4b815d7c68c836632,
     type: 3}
 --- !u!4 &137910296
 Transform:
@@ -190,6 +188,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WallTile (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
@@ -451,6 +454,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallTile (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -646,6 +654,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallTile (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -733,7 +746,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 288231995}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7, y: 0, z: 7}
+  m_LocalPosition: {x: -7, y: -0.5, z: 7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1021070398}
@@ -750,6 +763,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WallTile (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
@@ -1102,6 +1120,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallTile (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1290,6 +1313,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WallTile (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
@@ -1490,6 +1518,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallTile (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1564,6 +1597,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WallTile (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
@@ -1837,6 +1875,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallTile (15)
       objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2038,7 +2081,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1340248945}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7, y: 0, z: -7}
+  m_LocalPosition: {x: 7, y: -0.5, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1021070398}
@@ -2101,7 +2144,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1372230569}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7, y: 0, z: 7}
+  m_LocalPosition: {x: 7, y: -0.5, z: 7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1021070398}
@@ -2130,6 +2173,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WallTile (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
@@ -2205,6 +2253,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WallTile (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
@@ -2386,6 +2439,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallTile (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2530,7 +2588,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1781957115}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7, y: 0, z: -7}
+  m_LocalPosition: {x: -7, y: -0.5, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1021070398}
@@ -2614,6 +2672,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallTile (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2694,6 +2757,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WallTile (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
@@ -2868,6 +2936,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WallTile (13)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
@@ -3099,6 +3172,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallTile
       objectReference: {fileID: 0}
+    - target: {fileID: 1447298523038493659, guid: 4fcf70a0105305948848bc1e7159a833,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8522354037610417813, guid: 4fcf70a0105305948848bc1e7159a833,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3162,18 +3240,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 370177787524148390}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1947967324733954245 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1947967324733954245, guid: 3b88fa330a281dd4b815d7c68c836632,
-    type: 3}
-  m_PrefabInstance: {fileID: 5079235399848127728}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &2107918091893570855
 Transform:
   m_ObjectHideFlags: 0
@@ -3282,30 +3348,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1543276712764468037, guid: 3b88fa330a281dd4b815d7c68c836632,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3371428664089973951, guid: 3b88fa330a281dd4b815d7c68c836632,
-        type: 3}
-      propertyPath: healthBar
-      value: 
-      objectReference: {fileID: 1947967324733954245}
-    - target: {fileID: 3371428664089973951, guid: 3b88fa330a281dd4b815d7c68c836632,
-        type: 3}
-      propertyPath: data.isLocal
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3371428664089973951, guid: 3b88fa330a281dd4b815d7c68c836632,
-        type: 3}
-      propertyPath: data.team
-      value: -1
-      objectReference: {fileID: 0}
     - target: {fileID: 5079235398351791431, guid: 3b88fa330a281dd4b815d7c68c836632,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.04
+      value: -6.985
       objectReference: {fileID: 0}
     - target: {fileID: 5079235398351791431, guid: 3b88fa330a281dd4b815d7c68c836632,
         type: 3}
@@ -3315,7 +3361,7 @@ PrefabInstance:
     - target: {fileID: 5079235398351791431, guid: 3b88fa330a281dd4b815d7c68c836632,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.648
+      value: -3.092
       objectReference: {fileID: 0}
     - target: {fileID: 5079235398351791431, guid: 3b88fa330a281dd4b815d7c68c836632,
         type: 3}
@@ -3365,11 +3411,6 @@ PrefabInstance:
     - target: {fileID: 5079235398352064021, guid: 3b88fa330a281dd4b815d7c68c836632,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7362972108174047825, guid: 3b88fa330a281dd4b815d7c68c836632,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
