@@ -76,7 +76,7 @@ public class LobbyManager : MonoBehaviour
 			{
 				PlayerNetData pData = playerDatas[guids[i]];
 
-				text.text = pData.name + "     " + guids[i].ToString().Substring(0, 10) + "     " + pData.lobbyIndex;
+				text.text = pData.name + "     " + pData.id + "     " + guids[i].ToString().Substring(0, 10) + "     " + pData.lobbyIndex;
 			}
 			else
 			{
@@ -133,18 +133,24 @@ public class LobbyManager : MonoBehaviour
 		{
 			int colorIndex = i;
 
-			if(GameStats.gameMode != GameMode.FREE_FOR_ALL)
+			if (GameStats.gameMode != GameMode.FREE_FOR_ALL)
 			{
 				colorIndex = (int)(Mathf.Floor(i / 2f));
 			}
-			
-			teamPanels[i].color = GameStyle.Instance.teamColors[colorIndex];
+
+			teamPanels[i].color = GameManager.Instance.style.teamColors[colorIndex];
 		}
 
-		foreach(var playerData in playerDatas)
+		foreach (var playerData in playerDatas)
 		{
 			playerData.Value.UpdateTeam();
 		}
+
+		if (isHost)
+		{
+			SendGameMode();
+		}
+
 
 		//if (GameStats.gameMode == GameMode.FREE_FOR_ALL)
 		//{
@@ -169,7 +175,6 @@ public class LobbyManager : MonoBehaviour
 
 	public void SetRoundTime(int index)
 	{
-		GameStats.gameMode = (GameMode)index;
 	}
 
 	private void PlayerDisconnectFromServer(Guid guid)
@@ -239,6 +244,8 @@ public class LobbyManager : MonoBehaviour
 			Debug.Log("Send message: " + sendMsg);
 
 			NUServer.SendReliable(new Packet(sendMsg, new Guid[] { guid }));
+
+			SendGameMode();
 
 		}
 		else if (msgID == (int)Message.PLAYER_DISCONNECTED)
@@ -438,6 +445,11 @@ public class LobbyManager : MonoBehaviour
 				//playerDatas.Add(guid, playerData);
 			}
 		}
+		else if (msgID == (int)Message.SET_GAMEMODE)
+		{
+			int index = int.Parse(args[1]);
+			SetGameMode(index);
+		}
 		else if (msgID == (int)Message.START_MATCH)
 		{
 			StartMatch();
@@ -447,6 +459,12 @@ public class LobbyManager : MonoBehaviour
 		{
 			Debug.LogError(msg);
 		}
+	}
+
+	private void SendGameMode()
+	{
+		string sendMsg = Message.SET_GAMEMODE.ToString("d") + "|" + (int)GameStats.gameMode;
+		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 	}
 
 	private void OnApplicationQuit()

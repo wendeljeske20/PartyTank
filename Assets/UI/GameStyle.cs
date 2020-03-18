@@ -7,14 +7,14 @@ public class GameStyle : ScriptableObject
 {
     public Color[] teamColors;
 
-    public static GameStyle Instance { get; private set; }
+    //public static GameStyle Instance { get; private set; }
 
-    public GameStyle()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-    }
+    //public void Init()
+    //{
+    //    if (Instance == null)
+    //    {
+    //        Instance = this;
+    //    }
+    //}
 
 }

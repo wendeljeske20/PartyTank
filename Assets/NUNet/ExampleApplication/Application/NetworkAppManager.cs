@@ -84,7 +84,7 @@ public class NetworkAppManager : MonoBehaviour
 					spawnPositions[index].rotation);
 
 				player.data = playerData;
-				player.data.guid = guid;
+				//player.data.guid = guid;
 
 				if (NUClient.connected && guid == NUClient.guid) //Is Server Player
 				{
@@ -97,8 +97,7 @@ public class NetworkAppManager : MonoBehaviour
 				foreach (MeshRenderer renderer in player.renderers)
 				{
 					int colorIndex = (int)player.team;
-
-					renderer.materials[0].SetColor("_BaseColor", GameStyle.Instance.teamColors[colorIndex]);
+					renderer.materials[0].SetColor("_BaseColor", GameManager.Instance.style.teamColors[colorIndex]);
 				}
 
 				players.Add(guid, player);
@@ -193,7 +192,7 @@ public class NetworkAppManager : MonoBehaviour
 					spawnPositions[index].rotation);
 
 				player.data = LobbyManager.playerDatas[guid];
-				player.data.guid = guid;
+				//player.data.guid = guid;
 
 				if (guid == NUClient.guid)
 				{
@@ -201,6 +200,13 @@ public class NetworkAppManager : MonoBehaviour
 				}
 				player.name = "Player (" + name + ")";
 				player.GetComponentInChildren<Text>().text = name;
+
+				foreach (MeshRenderer renderer in player.renderers)
+				{
+					int colorIndex = (int)player.team;
+					renderer.materials[0].SetColor("_BaseColor", GameManager.Instance.style.teamColors[colorIndex]);
+				}
+
 				players.Add(guid, player);
 			}
 		}
