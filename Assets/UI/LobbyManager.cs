@@ -27,6 +27,8 @@ public class LobbyManager : MonoBehaviour
 
 	public Image[] teamPanels;
 
+	private int playerCount;
+
 	private void Awake()
 	{
 		NUServer.onClientConnected += ClientConnected;
@@ -198,7 +200,7 @@ public class LobbyManager : MonoBehaviour
 			string[] data = args[1].Split(';');
 			string name = data[0];
 
-			PlayerNetData playerData = new PlayerNetData(name, guid, 0);
+			PlayerNetData playerData = new PlayerNetData(name, guid, playerCount++);
 
 			//Debug.Log("guid   " + clientGuid);
 			if (playerDatas.ContainsKey(guid))
@@ -256,6 +258,7 @@ public class LobbyManager : MonoBehaviour
 				pData.lobbyIndex
 			);
 
+			playerCount--;
 			playerDatas.Remove(guid);
 
 			Debug.Log("Send message: " + sendMsg);

@@ -79,7 +79,6 @@ public class NetworkAppManager : MonoBehaviour
 
 			if (index != -1)
 			{
-				////Debug.Log("INDEX1  " + index);
 				Player player = GameObject.Instantiate(playerPrefab,
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
@@ -94,6 +93,14 @@ public class NetworkAppManager : MonoBehaviour
 
 				player.name = player.data.name;
 				player.GetComponentInChildren<Text>().text = player.name;
+
+				foreach (MeshRenderer renderer in player.renderers)
+				{
+					int colorIndex = (int)player.team;
+
+					renderer.materials[0].SetColor("_BaseColor", GameStyle.Instance.teamColors[colorIndex]);
+				}
+
 				players.Add(guid, player);
 			}
 		}

@@ -326,6 +326,9 @@ MonoBehaviour:
   moveSpeed: 3.5
   rotationSpeed: 5
   towerRotationSpeed: 7
+  renderers:
+  - {fileID: 5079235398354072487}
+  - {fileID: 5079235398354097185}
   tower: {fileID: 5079235398352078601}
   weapon: {fileID: 3119029720621061568}
 --- !u!54 &5079235398346746015

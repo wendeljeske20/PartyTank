@@ -24,6 +24,8 @@ public class Player : MonoBehaviour, IDamagable
 
 	public float towerRotationSpeed = 7;
 
+	public MeshRenderer[] renderers;
+
 	public GameObject tower;
 
 	public Weapon weapon;
@@ -36,6 +38,7 @@ public class Player : MonoBehaviour, IDamagable
 
 	private Rigidbody rb;
 
+
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody>();
@@ -43,24 +46,10 @@ public class Player : MonoBehaviour, IDamagable
 		UpdateHealthBar();
 	}
 
-	private void Update()
+	private void FixedUpdate()
 	{
 		weapon.team = team;
 
-
-
-		if (!NUClient.connected || !data.isLocal)
-			return;
-
-		if (Input.GetMouseButton(0))
-		{
-			weapon.Attack();
-		}
-
-
-	}
-	private void FixedUpdate()
-	{
 		if (LobbyManager.isHost)
 		{
 			rb.velocity = input;
@@ -71,14 +60,15 @@ public class Player : MonoBehaviour, IDamagable
 			}
 		}
 
-		Vector3 lookDirection = (targetPosition - tower.transform.position).normalized;
-		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(lookDirection.x, 0, lookDirection.z));
-		rotationToTarget = Quaternion.Lerp(rotationToTarget, lookRotation, towerRotationSpeed * Time.deltaTime);
-		//"Ignora" a rotação do objeto pai e rotaciona em direção ao alvo.
-		tower.transform.localRotation = rotationToTarget * Quaternion.Inverse(gameObject.transform.rotation);
+
 
 		if (!NUClient.connected || !data.isLocal)
 			return;
+
+		if (Input.GetMouseButton(0))
+		{
+			weapon.Attack();
+		}
 
 		input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized * moveSpeed;
 
@@ -94,6 +84,15 @@ public class Player : MonoBehaviour, IDamagable
 
 			NUClient.SendUnreliable(new Packet(msg));
 		}
+	}
+
+	private void LateUpdate()
+	{
+		Vector3 lookDirection = (targetPosition - tower.transform.position).normalized;
+		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(lookDirection.x, 0, lookDirection.z));
+		rotationToTarget = Quaternion.Lerp(rotationToTarget, lookRotation, towerRotationSpeed * Time.deltaTime);
+		//"Ignora" a rotação do objeto pai e rotaciona em direção ao alvo.
+		tower.transform.localRotation = rotationToTarget * Quaternion.Inverse(gameObject.transform.rotation);
 	}
 
 	public void TakeDamage(int damage)
