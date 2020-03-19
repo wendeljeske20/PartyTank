@@ -11,7 +11,7 @@ using TMPro;
 
 namespace Game
 {
-	public class NetworkMenuManager : MonoBehaviour
+	public class MenuManager : MonoBehaviour
 	{
 		public LobbyManager lobbyManager;
 

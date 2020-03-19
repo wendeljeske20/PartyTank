@@ -1,18 +1,12 @@
-﻿
-//System Includes
-using Guid = System.Guid;
+﻿using Guid = System.Guid;
 using Array = System.Array;
 using System.Collections.Generic;
-
-//Unity Includes
 using UnityEngine;
 using UnityEngine.UI;
-
-//Network Specifics
-using NUNet;
 using UnityEngine.SceneManagement;
+using NUNet;
 
-public class NetworkAppManager : MonoBehaviour
+public class MatchManager : MonoBehaviour
 {
 	[SerializeField]
 	private List<Transform> spawnPositions;

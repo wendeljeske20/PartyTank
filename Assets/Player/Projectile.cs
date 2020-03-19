@@ -100,7 +100,7 @@ public class Projectile : MonoBehaviour
 	}
 	public void SendDestroy()
 	{
-		NetworkAppManager.projectiles.Remove(id);
+		MatchManager.projectiles.Remove(id);
 		ToDestroy();
 
 		string sendMsg = (int)Message.DESTROY_PROJECTILE + "|" + id;
