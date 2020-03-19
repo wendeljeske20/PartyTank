@@ -15,20 +15,23 @@ namespace Game
 	{
 		public LobbyManager lobbyManager;
 
+		public GameObject mainContent;
+
+		public GameObject findContent;
+
 		public TMP_InputField nameField;
 
-		[SerializeField]
-		private InputField ipAddressField;
+		public TMP_InputField ipAddressField;
 
-		[SerializeField]
-		private InputField portField;
+		public TMP_InputField portField;
+
 		private string lastPort = "";
 
 		[SerializeField]
-		private Transform serverListPanel;
+		private GameObject serverEntryPrefab;
 
 		[SerializeField]
-		private GameObject serverEntryPrefab;
+		private Transform serverListPanel;
 
 		private HashSet<IPEndPoint> availableServers;
 
@@ -48,6 +51,7 @@ namespace Game
 			ipAddressField.text = "192.168.0.4";
 			//ipAddressField.text = "191.4.232.155";
 			portField.text = "25565";
+			findContent.SetActive(false);
 		}
 
 		private void Update()
@@ -58,6 +62,35 @@ namespace Game
 			{
 				NUClient.Broadcast(new Packet("PING"));
 			}
+		}
+
+		public void CreateGame()
+		{
+			mainContent.SetActive(false);
+			lobbyManager.readyButton.gameObject.SetActive(true);
+			CreateNewServer();
+		}
+
+		public void FindGame()
+		{
+			mainContent.SetActive(false);
+			findContent.SetActive(true);
+		}
+
+		public void BackToMainMenu()
+		{
+			mainContent.SetActive(true);
+			findContent.SetActive(false);
+		}
+
+		public void OpenOptionsPanel()
+		{
+
+		}
+
+		public void QuitGame()
+		{
+			Application.Quit();
 		}
 
 		private void ConnectedToServer()
@@ -105,7 +138,6 @@ namespace Game
 		{
 			NUServer.Start(NUUtilities.ListIPv4Addresses()[0]);
 			NUClient.Connect(NUUtilities.ListIPv4Addresses()[0]);
-			lobbyManager.readyButton.gameObject.SetActive(true);
 			LobbyManager.isHost = true;
 		}
 

@@ -114,6 +114,20 @@ public class LobbyManager : MonoBehaviour
 		NUClient.SendReliable(packet);
 	}
 
+	public void BackToMainMenu()
+	{
+		gameObject.SetActive(false);
+
+		if (isHost)
+		{
+			NUServer.Shutdown();
+			isHost = false;
+		}
+
+		NUClient.Disconnect();
+		NUClient.FinishBroadcast();
+	}
+
 	public void SendStartMatch()
 	{
 		NUServer.SendReliable(new Packet(Message.START_MATCH.ToString("d"), NUServer.GetConnectedClients()));
@@ -180,11 +194,17 @@ public class LobbyManager : MonoBehaviour
 	private void PlayerDisconnectFromServer(Guid guid)
 	{
 		int index = playerDatas[guid].lobbyIndex;
-		lobbyPanels[index].nameText.text = "...";
+		Team team = (Team)index;
 
+		if (team != Team.UNDEFINED)
+		{
+			lobbyPanels[index].ResetPanel();
+		}
+
+		playerCount--;
 		playerDatas.Remove(guid);
 
-		Packet packet = new Packet((int)Message.PLAYER_DISCONNECTED + "|" + guid, NUServer.GetConnectedClients()); ;
+		Packet packet = new Packet((int)Message.PLAYER_DISCONNECTED + "|" + guid, NUServer.GetConnectedClients());
 		NUServer.SendReliable(packet);
 	}
 
@@ -246,31 +266,6 @@ public class LobbyManager : MonoBehaviour
 			NUServer.SendReliable(new Packet(sendMsg, new Guid[] { guid }));
 
 			SendGameMode();
-
-		}
-		else if (msgID == (int)Message.PLAYER_DISCONNECTED)
-		{
-			string[] data = args[1].Split(';');
-			//Guid guid = new Guid(data[0]);
-			int index = playerDatas[guid].lobbyIndex;
-
-			lobbyPanels[index].ResetPanel();
-
-			var pData = playerDatas[guid];
-
-			string sendMsg = string.Format("{0}|{1};{2};{3}",
-				Message.PLAYER_DISCONNECTED.ToString("d"),
-				guid,
-				pData.name,
-				pData.lobbyIndex
-			);
-
-			playerCount--;
-			playerDatas.Remove(guid);
-
-			Debug.Log("Send message: " + sendMsg);
-
-			NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 
 		}
 		else if (msgID == (int)Message.PLAYER_JOIN)
@@ -388,8 +383,13 @@ public class LobbyManager : MonoBehaviour
 			Guid guid = new Guid(data[0]);
 			//string name = data[1];
 			int index = playerDatas[guid].lobbyIndex; //int.Parse(data[2]);
+			Team team = (Team)index;
 
-			lobbyPanels[index].ResetPanel();
+			if (team != Team.UNDEFINED)
+			{
+				lobbyPanels[index].ResetPanel();
+			}
+
 
 			//playerDatas.Remove(guid);
 		}
