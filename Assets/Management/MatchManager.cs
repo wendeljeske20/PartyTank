@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using NUNet;
+using System.Security.Principal;
+using Game;
 
 public class MatchManager : MonoBehaviour
 {
@@ -12,6 +14,8 @@ public class MatchManager : MonoBehaviour
 	private List<Transform> spawnPositions;
 
 	private Dictionary<Guid, Player> players = new Dictionary<Guid, Player>();
+
+	public List<Player> remaningPlayers = new List<Player>();
 
 	public static Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
 
@@ -40,6 +44,18 @@ public class MatchManager : MonoBehaviour
 			Spawn();
 		}
 	}
+
+	private void FixedUpdate()
+	{
+		if (NUServer.started) //Is Server!
+		{
+			string sendMsg = GetStateMsg();
+			Packet stateData = new Packet(GetStateMsg(), NUServer.GetConnectedClients());
+			NUServer.SendUnreliable(stateData);
+			//Debug.Log(sendMsg.Length + "|||||" + sendMsg);
+		}
+	}
+
 	private void ClientConnected(Guid id)
 	{
 	}
@@ -53,16 +69,38 @@ public class MatchManager : MonoBehaviour
 		SceneManager.LoadScene(0);
 	}
 
-	private void FixedUpdate()
+	private void OnPlayerDeath(Player player)
 	{
-		if (NUServer.started) //Is Server!
+		remaningPlayers.Remove(player);
+
+		if (remaningPlayers.Count == 2 && remaningPlayers[0].team == remaningPlayers[1].team)
 		{
-			string sendMsg = GetStateMsg();
-			Packet stateData = new Packet(GetStateMsg(), NUServer.GetConnectedClients());
-			NUServer.SendUnreliable(stateData);
-			//Debug.Log(sendMsg.Length + "|||||" + sendMsg);
+			SendWinnerTeam(remaningPlayers[0].team);
 		}
+		else if (remaningPlayers.Count == 1)
+		{
+			SendWinnerTeam(remaningPlayers[0].team);
+		}
+
+
 	}
+
+	private void SendWinnerTeam(Team team)
+	{
+		SetWinnerTeam(team);
+		string sendMsg = (int)Message.SET_WINNER_TEAM + "|" + team.ToString("d");
+		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
+	}
+
+	private void SetWinnerTeam(Team team)
+	{
+		UnityTask.DelayedAction(1.0f, () =>
+		{
+			RespawnPlayers();
+		});
+	}
+
+
 
 	public void Spawn()
 	{
@@ -70,14 +108,16 @@ public class MatchManager : MonoBehaviour
 		{
 			PlayerNetData playerData = LobbyManager.playerDatas[guid];
 			int index = playerData.lobbyIndex;
+			Team team = (Team)index;
 
-			if (index != -1)
+			if (team != Team.UNDEFINED)
 			{
 				Player player = GameObject.Instantiate(playerPrefab,
 					spawnPositions[index].position,
 					spawnPositions[index].rotation);
 
 				player.data = playerData;
+				player.OnDeath += OnPlayerDeath;
 				//player.data.guid = guid;
 
 				if (NUClient.connected && guid == NUClient.guid) //Is Server Player
@@ -95,6 +135,7 @@ public class MatchManager : MonoBehaviour
 				}
 
 				players.Add(guid, player);
+				remaningPlayers.Add(player);
 			}
 		}
 
@@ -107,6 +148,19 @@ public class MatchManager : MonoBehaviour
 		Guid[] guids = NUServer.GetConnectedClients();
 		NUServer.SendReliable(new Packet(sendMsg, guids));
 		NUServer.SendReliable(new Packet(GetStateMsg(), guids));
+	}
+
+	private void RespawnPlayers()
+	{
+		remaningPlayers.Clear();
+		foreach (Player player in players.Values)
+		{
+			player.transform.position = spawnPositions[player.data.lobbyIndex].position;
+			player.transform.rotation = spawnPositions[player.data.lobbyIndex].rotation;
+			player.gameObject.SetActive(true);
+			player.Awake();
+			remaningPlayers.Add(player);
+		}
 	}
 
 	private void ServerReceivedPacket(Guid guid, Packet packet)
@@ -202,6 +256,7 @@ public class MatchManager : MonoBehaviour
 				}
 
 				players.Add(guid, player);
+				//remaningPlayers.Add(player);
 			}
 		}
 		else if (msgID == (int)Message.PLAYER_PROJECTILES_STATE)
@@ -237,6 +292,12 @@ public class MatchManager : MonoBehaviour
 			{
 				player.TakeDamage(damage);
 			}
+		}
+		else if (msgID == (int)Message.PLAYER_DESTROY)
+		{
+			Guid guid = new Guid(args[1]);
+
+			players[guid].gameObject.SetActive(false);
 		}
 		else if (msgID == (int)Message.PLAYER_SHOOT)
 		{
@@ -280,6 +341,11 @@ public class MatchManager : MonoBehaviour
 			{
 				player.gameObject.SetActive(false);
 			}
+		}
+		else if (msgID == (int)Message.SET_WINNER_TEAM)
+		{
+			Team team = (Team)(int.Parse(args[1]));
+			SetWinnerTeam(team);
 		}
 
 		if (packet.id >= 0)

@@ -38,8 +38,10 @@ public class Player : MonoBehaviour, IDamagable
 
 	private Rigidbody rb;
 
+	public Action<Player> OnDeath;
 
-	private void Awake()
+
+	public void Awake()
 	{
 		rb = GetComponent<Rigidbody>();
 		currentHealth = maxHealth;
@@ -99,10 +101,11 @@ public class Player : MonoBehaviour, IDamagable
 	{
 		currentHealth -= damage;
 
-		if (currentHealth < 0)
+		if (LobbyManager.isHost && currentHealth <= 0)
 		{
-			//SendDestroy();
-			//gameObject.SetActive(false);
+			gameObject.SetActive(false);
+			OnDeath.Invoke(this);
+			SendDestroy();
 		}
 
 		UpdateHealthBar();
@@ -111,10 +114,19 @@ public class Player : MonoBehaviour, IDamagable
 	public void SendTakeDamage(int damage)
 	{
 		TakeDamage(damage);
-
 		string sendMsg = (int)Message.PLAYER_TAKE_DAMAGE + "|" + data.guid.ToString() + ";" + damage;
-
 		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
+	}
+
+	private void SendDestroy()
+	{
+		string sendMsg = (int)Message.PLAYER_DESTROY + "|" + data.guid.ToString();
+		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
+	}
+
+	public void Respawn()
+	{
+		gameObject.SetActive(true);
 	}
 
 	private void UpdateHealthBar()

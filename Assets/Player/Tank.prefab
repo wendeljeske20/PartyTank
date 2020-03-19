@@ -5121,7 +5121,7 @@ MonoBehaviour:
     type: 3}
   attackInterval: 0.2
   projectileSpeed: 6
-  damage: 10
+  damage: 20
 --- !u!33 &5079235398353106865
 MeshFilter:
   m_ObjectHideFlags: 0
