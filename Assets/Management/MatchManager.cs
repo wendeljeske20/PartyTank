@@ -5,8 +5,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using NUNet;
-using System.Security.Principal;
 using Game;
+using System;
+using System.Linq;
 
 public class MatchManager : MonoBehaviour
 {
@@ -21,6 +22,10 @@ public class MatchManager : MonoBehaviour
 
 	[SerializeField]
 	private Player playerPrefab;
+
+	public static bool roundStarted = false;
+
+	public Func<System.Collections.IEnumerator> OnRoundCounterStarted;
 
 	private void Awake()
 	{
@@ -42,17 +47,17 @@ public class MatchManager : MonoBehaviour
 		if (NUServer.started) //Is Server!
 		{
 			Spawn();
+			StartCoroutine(OnRoundCounterStarted());
 		}
 	}
 
 	private void FixedUpdate()
 	{
-		if (NUServer.started) //Is Server!
+		if (roundStarted && NUServer.started)
 		{
 			string sendMsg = GetStateMsg();
 			Packet stateData = new Packet(GetStateMsg(), NUServer.GetConnectedClients());
 			NUServer.SendUnreliable(stateData);
-			//Debug.Log(sendMsg.Length + "|||||" + sendMsg);
 		}
 	}
 
@@ -81,22 +86,29 @@ public class MatchManager : MonoBehaviour
 		{
 			SendWinnerTeam(remaningPlayers[0].team);
 		}
-
+		else if (remaningPlayers.Count == 0)
+		{
+			SendWinnerTeam(Team.TEAM_1);
+		}
 
 	}
 
 	private void SendWinnerTeam(Team team)
 	{
 		SetWinnerTeam(team);
+
 		string sendMsg = (int)Message.SET_WINNER_TEAM + "|" + team.ToString("d");
 		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 	}
 
 	private void SetWinnerTeam(Team team)
 	{
+		roundStarted = false;
 		UnityTask.DelayedAction(1.0f, () =>
 		{
+			DestroyAllProjectiles();
 			RespawnPlayers();
+			StartCoroutine(OnRoundCounterStarted());
 		});
 	}
 
@@ -161,6 +173,21 @@ public class MatchManager : MonoBehaviour
 			player.Awake();
 			remaningPlayers.Add(player);
 		}
+	}
+
+	public void StartRound()
+	{
+		roundStarted = true;
+	}
+
+	private void DestroyAllProjectiles()
+	{
+		foreach (var projectile in projectiles)
+		{
+			Destroy(projectile.Value.gameObject);
+		}
+
+		projectiles.Clear();
 	}
 
 	private void ServerReceivedPacket(Guid guid, Packet packet)
@@ -257,6 +284,7 @@ public class MatchManager : MonoBehaviour
 
 				players.Add(guid, player);
 				//remaningPlayers.Add(player);
+				StartCoroutine(OnRoundCounterStarted());
 			}
 		}
 		else if (msgID == (int)Message.PLAYER_PROJECTILES_STATE)

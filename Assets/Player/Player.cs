@@ -43,7 +43,9 @@ public class Player : MonoBehaviour, IDamagable
 
 	public void Awake()
 	{
+		input = Vector3.zero;
 		rb = GetComponent<Rigidbody>();
+		rb.velocity = Vector3.zero;
 		currentHealth = maxHealth;
 		UpdateHealthBar();
 	}
@@ -64,7 +66,7 @@ public class Player : MonoBehaviour, IDamagable
 
 
 
-		if (!NUClient.connected || !data.isLocal)
+		if (!MatchManager.roundStarted || !NUClient.connected || !data.isLocal)
 			return;
 
 		if (Input.GetMouseButton(0))
