@@ -11,6 +11,8 @@ public class Player : MonoBehaviour, IDamagable
 {
 	public PlayerNetData data;
 
+	public GameObject explosionPrefab;
+
 	public Image healthBar;
 	public Team team { get => data.team; set => data.team = value; }
 
@@ -107,6 +109,7 @@ public class Player : MonoBehaviour, IDamagable
 		{
 			gameObject.SetActive(false);
 			OnDeath.Invoke(this);
+			Instantiate(explosionPrefab, transform.position, Quaternion.identity);
 			SendDestroy();
 		}
 

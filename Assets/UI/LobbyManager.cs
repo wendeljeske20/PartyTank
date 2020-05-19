@@ -124,6 +124,18 @@ public class LobbyManager : MonoBehaviour
 			isHost = false;
 		}
 
+		for (int i = 0; i < spectatorsContent.childCount; i++)
+		{
+			Text text = spectatorsContent.GetChild(i).GetComponent<Text>();
+			Debug.Log("a ", text);
+			text.text = "...";
+		}
+
+		foreach (var panel in lobbyPanels)
+		{
+			panel.ResetPanel();
+		}
+
 		NUClient.Disconnect();
 		NUClient.FinishBroadcast();
 	}

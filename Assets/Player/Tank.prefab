@@ -320,8 +320,10 @@ MonoBehaviour:
     lobbyIndex: 0
     team: 0
     isLocal: 0
+  explosionPrefab: {fileID: 8549134280864839954, guid: cd5b2b2bab9df56459f26121be727d7b,
+    type: 3}
   healthBar: {fileID: 1947967324733954245}
-  maxHealth: 100
+  maxHealth: 1
   currentHealth: 0
   moveSpeed: 3.5
   rotationSpeed: 5
@@ -5119,9 +5121,9 @@ MonoBehaviour:
   muzzle: {fileID: 6886686872393775859}
   projectilePrefab: {fileID: 332656174168820290, guid: ad7d4af1ca32a2e4e94c4a3807cf06c9,
     type: 3}
-  attackInterval: 0.2
+  attackInterval: 2
   projectileSpeed: 6
-  damage: 20
+  damage: 10
 --- !u!33 &5079235398353106865
 MeshFilter:
   m_ObjectHideFlags: 0

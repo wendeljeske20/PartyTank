@@ -324,7 +324,7 @@ public class MatchManager : MonoBehaviour
 		else if (msgID == (int)Message.PLAYER_DESTROY)
 		{
 			Guid guid = new Guid(args[1]);
-
+			Instantiate(players[guid].explosionPrefab, players[guid].transform.position, Quaternion.identity);
 			players[guid].gameObject.SetActive(false);
 		}
 		else if (msgID == (int)Message.PLAYER_SHOOT)

@@ -48,8 +48,7 @@ namespace Game
 		{
 			NUClient.SetupBroadcast(NUUtilities.ListIPv4Addresses()[0]);
 			nameField.text = "GUESS " + UnityEngine.Random.Range(100, 1000).ToString();
-			ipAddressField.text = "192.168.0.4";
-			//ipAddressField.text = "191.4.232.155";
+			ipAddressField.text = NUUtilities.ListIPv4Addresses()[0].ToString();
 			portField.text = "25565";
 			findContent.SetActive(false);
 		}
@@ -57,11 +56,6 @@ namespace Game
 		private void Update()
 		{
 			LobbyManager.playerName = nameField.text;
-
-			if (Input.GetKeyUp(KeyCode.Space))
-			{
-				NUClient.Broadcast(new Packet("PING"));
-			}
 		}
 
 		public void CreateGame()
