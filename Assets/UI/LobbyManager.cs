@@ -14,6 +14,8 @@ public class LobbyManager : MonoBehaviour
 	public static string playerName = "123";
 	public static bool isHost;
 
+	public GameObject gamemodeDropdown;
+
 	public Transform spectatorsContent;
 
 	//public PlayerLobbyPanel playerPanelPrefab;
@@ -52,10 +54,15 @@ public class LobbyManager : MonoBehaviour
 
 		readyButton.gameObject.SetActive(false);
 		gameObject.SetActive(false);
+		SetGameMode(0);
 	}
 
 	private void Update()
 	{
+		if (!isHost)
+		{
+			gamemodeDropdown.SetActive(false);
+		}
 		GameObject.Find("Text123").GetComponent<Text>().text = playerName;
 		//string msg = "";
 		//foreach (var pData in playerDatas)

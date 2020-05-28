@@ -78,13 +78,13 @@ public class MatchManager : MonoBehaviour
 	{
 		remaningPlayers.Remove(player);
 
-		if (remaningPlayers.Count == 2 && remaningPlayers[0].team == remaningPlayers[1].team)
+		if (remaningPlayers.Count == 2 && remaningPlayers[0].Team == remaningPlayers[1].Team)
 		{
-			SendWinnerTeam(remaningPlayers[0].team);
+			SendWinnerTeam(remaningPlayers[0].Team);
 		}
 		else if (remaningPlayers.Count == 1)
 		{
-			SendWinnerTeam(remaningPlayers[0].team);
+			SendWinnerTeam(remaningPlayers[0].Team);
 		}
 		else if (remaningPlayers.Count == 0)
 		{
@@ -142,7 +142,7 @@ public class MatchManager : MonoBehaviour
 
 				foreach (MeshRenderer renderer in player.renderers)
 				{
-					int colorIndex = (int)player.team;
+					int colorIndex = (int)player.Team;
 					renderer.materials[0].SetColor("_BaseColor", GameManager.Instance.style.teamColors[colorIndex]);
 				}
 
@@ -184,7 +184,7 @@ public class MatchManager : MonoBehaviour
 	{
 		foreach (var projectile in projectiles)
 		{
-			Destroy(projectile.Value.gameObject);
+			projectile.Value.ToDestroy();
 		}
 
 		projectiles.Clear();
@@ -278,7 +278,7 @@ public class MatchManager : MonoBehaviour
 
 				foreach (MeshRenderer renderer in player.renderers)
 				{
-					int colorIndex = (int)player.team;
+					int colorIndex = (int)player.Team;
 					renderer.materials[0].SetColor("_BaseColor", GameManager.Instance.style.teamColors[colorIndex]);
 				}
 
@@ -324,8 +324,7 @@ public class MatchManager : MonoBehaviour
 		else if (msgID == (int)Message.PLAYER_DESTROY)
 		{
 			Guid guid = new Guid(args[1]);
-			Instantiate(players[guid].explosionPrefab, players[guid].transform.position, Quaternion.identity);
-			players[guid].gameObject.SetActive(false);
+			players[guid].ToDestroy();
 		}
 		else if (msgID == (int)Message.PLAYER_SHOOT)
 		{

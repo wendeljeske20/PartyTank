@@ -14,7 +14,7 @@ public class Player : MonoBehaviour, IDamagable
 	public GameObject explosionPrefab;
 
 	public Image healthBar;
-	public Team team { get => data.team; set => data.team = value; }
+	public Team Team { get => data.team; set => data.team = value; }
 
 	public float maxHealth = 100;
 
@@ -54,7 +54,7 @@ public class Player : MonoBehaviour, IDamagable
 
 	private void FixedUpdate()
 	{
-		weapon.team = team;
+		weapon.team = Team;
 
 		if (LobbyManager.isHost)
 		{
@@ -107,9 +107,8 @@ public class Player : MonoBehaviour, IDamagable
 
 		if (LobbyManager.isHost && currentHealth <= 0)
 		{
-			gameObject.SetActive(false);
 			OnDeath.Invoke(this);
-			Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+			ToDestroy();
 			SendDestroy();
 		}
 
@@ -121,6 +120,12 @@ public class Player : MonoBehaviour, IDamagable
 		TakeDamage(damage);
 		string sendMsg = (int)Message.PLAYER_TAKE_DAMAGE + "|" + data.guid.ToString() + ";" + damage;
 		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
+	}
+
+	public void ToDestroy()
+	{
+		Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+		gameObject.SetActive(false);
 	}
 
 	private void SendDestroy()

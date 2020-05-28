@@ -1,6 +1,6 @@
 ﻿public interface IDamagable
 {
-	Team team { get; set; }
+	Team Team { get; set; }
 
 	void TakeDamage(int damage);
 

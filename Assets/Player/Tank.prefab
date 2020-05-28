@@ -62,6 +62,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -248,6 +249,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.13207549, g: 0.13207549, b: 0.13207549, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -279,7 +281,7 @@ GameObject:
   - component: {fileID: 5079235398349924105}
   m_Layer: 8
   m_Name: Tank
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -320,10 +322,10 @@ MonoBehaviour:
     lobbyIndex: 0
     team: 0
     isLocal: 0
-  explosionPrefab: {fileID: 8549134280864839954, guid: cd5b2b2bab9df56459f26121be727d7b,
+  explosionPrefab: {fileID: 8549134280864839954, guid: d848d7ff6de5f0c479843a5ed4a086fa,
     type: 3}
   healthBar: {fileID: 1947967324733954245}
-  maxHealth: 1
+  maxHealth: 100
   currentHealth: 0
   moveSpeed: 3.5
   rotationSpeed: 5
@@ -5121,7 +5123,7 @@ MonoBehaviour:
   muzzle: {fileID: 6886686872393775859}
   projectilePrefab: {fileID: 332656174168820290, guid: ad7d4af1ca32a2e4e94c4a3807cf06c9,
     type: 3}
-  attackInterval: 2
+  attackInterval: 1
   projectileSpeed: 6
   damage: 10
 --- !u!33 &5079235398353106865
@@ -10246,6 +10248,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.1981132, g: 0.1981132, b: 0.1981132, a: 1}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -10319,6 +10322,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 1, b: 0.09756088, a: 1}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

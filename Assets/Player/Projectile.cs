@@ -8,6 +8,12 @@ using UnityEngine.Tilemaps;
 
 public class Projectile : MonoBehaviour
 {
+	[BoxGroup("References")]
+	public GameObject explosionPrefab;
+
+	[BoxGroup("References")]
+	public PlayerNetData ownerPlayer;
+
 	[BoxGroup("Properties")]
 	public Team team;
 
@@ -72,6 +78,7 @@ public class Projectile : MonoBehaviour
 
 	public void ToDestroy()
 	{
+		Instantiate(explosionPrefab, transform.position, Quaternion.identity);
 		Destroy(gameObject);
 		OnHit?.Invoke();
 	}

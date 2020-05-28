@@ -9,9 +9,23 @@ public class HudManager : MonoBehaviour
 
 	public MatchManager matchManager;
 
+	public Scoreboard scoreboard;
+
 	private void Awake()
 	{
 		matchManager.OnRoundCounterStarted = StartCounterText;
+	}
+
+	private void Update()
+	{
+		if(Input.GetKeyDown(KeyCode.Tab))
+		{
+			ShowScoreboard();
+		}
+		else if (Input.GetKeyUp(KeyCode.Tab))
+		{
+			HideScoreboard();
+		}
 	}
 
 	public IEnumerator StartCounterText()
@@ -31,5 +45,15 @@ public class HudManager : MonoBehaviour
 		yield return new WaitForSeconds(1.0f);
 		counterText.gameObject.SetActive(false);
 		matchManager.StartRound();
+	}
+
+	public void ShowScoreboard()
+	{
+		scoreboard.Show();
+	}
+
+	public void HideScoreboard()
+	{
+		scoreboard.Hide();
 	}
 }
