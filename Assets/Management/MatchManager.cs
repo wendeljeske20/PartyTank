@@ -16,7 +16,7 @@ public class MatchManager : MonoBehaviour
 
 	private Dictionary<Guid, Player> players = new Dictionary<Guid, Player>();
 
-	public List<Player> remaningPlayers = new List<Player>();
+	public List<Player> remainingPlayers = new List<Player>();
 
 	public static Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
 
@@ -76,17 +76,17 @@ public class MatchManager : MonoBehaviour
 
 	private void OnPlayerDeath(Player player)
 	{
-		remaningPlayers.Remove(player);
+		remainingPlayers.Remove(player);
 
-		if (remaningPlayers.Count == 2 && remaningPlayers[0].Team == remaningPlayers[1].Team)
+		if (remainingPlayers.Count == 2 && remainingPlayers[0].Team == remainingPlayers[1].Team)
 		{
-			SendWinnerTeam(remaningPlayers[0].Team);
+			SendWinnerTeam(remainingPlayers[0].Team);
 		}
-		else if (remaningPlayers.Count == 1)
+		else if (remainingPlayers.Count == 1)
 		{
-			SendWinnerTeam(remaningPlayers[0].Team);
+			SendWinnerTeam(remainingPlayers[0].Team);
 		}
-		else if (remaningPlayers.Count == 0)
+		else if (remainingPlayers.Count == 0)
 		{
 			SendWinnerTeam(Team.TEAM_1);
 		}
@@ -118,7 +118,7 @@ public class MatchManager : MonoBehaviour
 	{
 		foreach (Guid guid in NUServer.GetConnectedClients())
 		{
-			PlayerNetData playerData = LobbyManager.playerDatas[guid];
+			PlayerData playerData = LobbyManager.playerDatas[guid];
 			int index = playerData.lobbyIndex;
 			Team team = (Team)index;
 
@@ -147,7 +147,7 @@ public class MatchManager : MonoBehaviour
 				}
 
 				players.Add(guid, player);
-				remaningPlayers.Add(player);
+				remainingPlayers.Add(player);
 			}
 		}
 
@@ -164,14 +164,14 @@ public class MatchManager : MonoBehaviour
 
 	private void RespawnPlayers()
 	{
-		remaningPlayers.Clear();
+		remainingPlayers.Clear();
 		foreach (Player player in players.Values)
 		{
 			player.transform.position = spawnPositions[player.data.lobbyIndex].position;
 			player.transform.rotation = spawnPositions[player.data.lobbyIndex].rotation;
 			player.gameObject.SetActive(true);
 			player.Awake();
-			remaningPlayers.Add(player);
+			remainingPlayers.Add(player);
 		}
 	}
 
@@ -318,7 +318,7 @@ public class MatchManager : MonoBehaviour
 			Player player;
 			if (players.TryGetValue(guid, out player))
 			{
-				player.TakeDamage(damage);
+				player.TakeDamage(damage, player.data);
 			}
 		}
 		else if (msgID == (int)Message.PLAYER_DESTROY)

@@ -2,7 +2,7 @@
 {
 	Team Team { get; set; }
 
-	void TakeDamage(int damage);
+	void TakeDamage(int damage, PlayerData ownerPlayer);
 
-	void SendTakeDamage(int damage);
+	void SendTakeDamage(int damage, PlayerData ownerPlayer);
 }

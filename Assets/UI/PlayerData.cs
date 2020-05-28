@@ -3,7 +3,7 @@ using UnityEngine;
 using Guid = System.Guid;
 
 [Serializable]
-public class PlayerNetData
+public class PlayerData
 {
 	public Guid guid;
 
@@ -20,7 +20,7 @@ public class PlayerNetData
 
 	//public bool ready;
 
-	public PlayerNetData(string name, Guid guid, int id)
+	public PlayerData(string name, Guid guid, int id)
 	{
 		this.name = name;
 		this.guid = guid;

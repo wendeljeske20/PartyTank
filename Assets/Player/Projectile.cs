@@ -11,8 +11,8 @@ public class Projectile : MonoBehaviour
 	[BoxGroup("References")]
 	public GameObject explosionPrefab;
 
-	[BoxGroup("References")]
-	public PlayerNetData ownerPlayer;
+	[BoxGroup("Debug")]
+	public PlayerData ownerPlayer;
 
 	[BoxGroup("Properties")]
 	public Team team;
@@ -23,6 +23,7 @@ public class Projectile : MonoBehaviour
 	[BoxGroup("Properties")]
 	public int damage = 10;
 
+	[BoxGroup("Properties")]
 	public float duration = 10;
 
 	[HideInInspector]
@@ -93,7 +94,7 @@ public class Projectile : MonoBehaviour
 		if (damagable == null || hittedDamagable == damagable)// || team == damagable.team)
 			return;
 
-		damagable.SendTakeDamage(damage);
+		damagable.SendTakeDamage(damage, ownerPlayer);
 		hittedDamagable = damagable;
 		SendDestroy();
 	}

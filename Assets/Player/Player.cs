@@ -9,7 +9,7 @@ using Unity.Collections;
 
 public class Player : MonoBehaviour, IDamagable
 {
-	public PlayerNetData data;
+	public PlayerData data;
 
 	public GameObject explosionPrefab;
 
@@ -101,7 +101,7 @@ public class Player : MonoBehaviour, IDamagable
 		tower.transform.localRotation = rotationToTarget * Quaternion.Inverse(gameObject.transform.rotation);
 	}
 
-	public void TakeDamage(int damage)
+	public void TakeDamage(int damage, PlayerData ownerPlayer)
 	{
 		currentHealth -= damage;
 
@@ -115,9 +115,9 @@ public class Player : MonoBehaviour, IDamagable
 		UpdateHealthBar();
 	}
 
-	public void SendTakeDamage(int damage)
+	public void SendTakeDamage(int damage, PlayerData ownerPlayer)
 	{
-		TakeDamage(damage);
+		TakeDamage(damage, ownerPlayer);
 		string sendMsg = (int)Message.PLAYER_TAKE_DAMAGE + "|" + data.guid.ToString() + ";" + damage;
 		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 	}

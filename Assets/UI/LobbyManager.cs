@@ -23,7 +23,7 @@ public class LobbyManager : MonoBehaviour
 
 	public Button readyButton;
 
-	public static Dictionary<Guid, PlayerNetData> playerDatas = new Dictionary<Guid, PlayerNetData>();
+	public static Dictionary<Guid, PlayerData> playerDatas = new Dictionary<Guid, PlayerData>();
 
 	public GameObject teamsContent;
 
@@ -81,7 +81,7 @@ public class LobbyManager : MonoBehaviour
 
 			if (i < playerDatas.Count && i < guids.Count)
 			{
-				PlayerNetData pData = playerDatas[guids[i]];
+				PlayerData pData = playerDatas[guids[i]];
 
 				text.text = pData.name + "     " + pData.id + "     " + guids[i].ToString().Substring(0, 10) + "     " + pData.lobbyIndex;
 			}
@@ -244,7 +244,7 @@ public class LobbyManager : MonoBehaviour
 			string[] data = args[1].Split(';');
 			string name = data[0];
 
-			PlayerNetData playerData = new PlayerNetData(name, guid, playerCount++);
+			PlayerData playerData = new PlayerData(name, guid, playerCount++);
 
 			//Debug.Log("guid   " + clientGuid);
 			if (playerDatas.ContainsKey(guid))
@@ -310,7 +310,7 @@ public class LobbyManager : MonoBehaviour
 				playerPanel.nameText.color = Utility.HtmlToColor("#0099FF");
 			}
 
-			PlayerNetData playerData = playerDatas[guid];
+			PlayerData playerData = playerDatas[guid];
 			playerData.lobbyIndex = index;
 			playerData.UpdateTeam();
 
@@ -369,7 +369,7 @@ public class LobbyManager : MonoBehaviour
 				//PlayerLobbyPanel playerPanel = lobbyPanels[index];
 				//playerPanel.nameText.text = name;
 
-				PlayerNetData playerData = new PlayerNetData(name, guid, 0);
+				PlayerData playerData = new PlayerData(name, guid, 0);
 				//Debug.Log("lobby index:      " + index);
 
 
