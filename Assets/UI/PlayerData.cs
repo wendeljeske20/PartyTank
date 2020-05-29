@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using Guid = System.Guid;
 
 [Serializable]
 public class PlayerData
@@ -13,10 +12,13 @@ public class PlayerData
 
 	public int lobbyIndex = -1;
 
-	public Team team = Team.UNDEFINED;
-
 	public bool isLocal;
 
+	public TeamData teamData;
+
+	public int deathsScore;
+
+	public int killsScore;
 
 	//public bool ready;
 
@@ -25,22 +27,28 @@ public class PlayerData
 		this.name = name;
 		this.guid = guid;
 		this.id = id;
+		this.teamData = new TeamData();
 	}
 
 	public void UpdateTeam()
 	{
-		team = (Team)lobbyIndex;
+		int index = Mathf.FloorToInt(lobbyIndex / ((int)GameStats.gameMode + 1));
+		Debug.Log("INDEX  " + index);
+		teamData.team = (Team)(index);
 
-		if (GameStats.gameMode == GameMode.FREE_FOR_ALL)
+		if (index == -1)
 			return;
 
-		team = (Team)(Mathf.Floor(lobbyIndex / 2f));
+		teamData.color = GameManager.Instance.style.teamColors[index];
 	}
 }
 
+[Serializable]
 public class TeamData
 {
 	public Team team;
+
 	public Color color;
 
+	public int score;
 }

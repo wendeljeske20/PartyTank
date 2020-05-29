@@ -11,6 +11,8 @@ using System.Linq;
 
 public class MatchManager : MonoBehaviour
 {
+	public HudManager hudManager;
+
 	[SerializeField]
 	private List<Transform> spawnPositions;
 
@@ -26,6 +28,7 @@ public class MatchManager : MonoBehaviour
 	public static bool roundStarted = false;
 
 	public Func<System.Collections.IEnumerator> OnRoundCounterStarted;
+
 
 	private void Awake()
 	{
@@ -49,6 +52,7 @@ public class MatchManager : MonoBehaviour
 			Spawn();
 			StartCoroutine(OnRoundCounterStarted());
 		}
+		hudManager.scoreboard.UpdateLayout();
 	}
 
 	private void FixedUpdate()
@@ -111,8 +115,6 @@ public class MatchManager : MonoBehaviour
 			StartCoroutine(OnRoundCounterStarted());
 		});
 	}
-
-
 
 	public void Spawn()
 	{

@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using NUNet;
 using UnityEngine.SceneManagement;
-using Game;
 
 public class LobbyManager : MonoBehaviour
 {

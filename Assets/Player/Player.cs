@@ -14,7 +14,7 @@ public class Player : MonoBehaviour, IDamagable
 	public GameObject explosionPrefab;
 
 	public Image healthBar;
-	public Team Team { get => data.team; set => data.team = value; }
+	public Team Team { get => data.teamData.team; set => data.teamData.team = value; }
 
 	public float maxHealth = 100;
 
@@ -107,6 +107,12 @@ public class Player : MonoBehaviour, IDamagable
 
 		if (LobbyManager.isHost && currentHealth <= 0)
 		{
+			if (ownerPlayer != data)
+			{
+				ownerPlayer.killsScore++;
+			}
+
+			data.deathsScore++;
 			OnDeath.Invoke(this);
 			ToDestroy();
 			SendDestroy();
