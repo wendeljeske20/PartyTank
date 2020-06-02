@@ -1,8 +1,7 @@
 ﻿
-using NaughtyAttributes;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,15 +11,14 @@ namespace Game.UI
 	[AddComponentMenu("[Game]/UI/FlexibleUIImage")]
 	public class FlexibleUIImage : FlexibleUI
 	{
-
-
 		[BoxGroup("Properties")]
 		public ColorType colorType;
 
-		[BoxGroup("Properties")]
-		public SpriteType spriteType;
-
 		Image image;
+
+		[BoxGroup("Properties")]
+		[ValueDropdown("GetSpriteIndex")]
+		public int spriteIndex;
 
 		public enum ColorType
 		{
@@ -32,35 +30,34 @@ namespace Game.UI
 			QUATERNARY
 		}
 
-		public enum SpriteType
-		{
-			NONE,
-			PRIMARY,
-			SECONDARY,
-			TERTIARY,
-			QUATERNARY
-		}
-
-
-
 		protected override void OnSkinUI()
 		{
 			base.OnSkinUI();
 
 			image = GetComponent<Image>();
+
 			image.type = Image.Type.Sliced;
 
-			if (colorType != ColorType.NONE)
+			if(colorType != ColorType.NONE)
 			{
-				Color color = flexibleUIData.colors[(int)colorType - 1];
+				Color color = UIStyle.Instance.flexibleUIData.colors[(int)colorType];
 				color.a = image.color.a;
 				image.color = color;
 			}
+			
+			image.sprite = UIStyle.Instance.flexibleUIData.sprites[spriteIndex];
+		}
 
-			if (spriteType != SpriteType.NONE)
+		private IEnumerable GetSpriteIndex()
+		{
+			ValueDropdownList<int> items = new ValueDropdownList<int>();
+			FlexibleUIData data = UIStyle.Instance.flexibleUIData;
+			for (int i = 0; i < data.sprites.Count; i++)
 			{
-				image.sprite = flexibleUIData.sprites[(int)spriteType - 1];
+				string name = data.sprites[i].ToString().Split(' ')[0];
+				items.Add(name, i);
 			}
+			return items;
 		}
 	}
 }

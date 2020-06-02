@@ -320,12 +320,17 @@ MonoBehaviour:
     id: 0
     name: 
     lobbyIndex: 0
-    team: 0
     isLocal: 0
+    teamData:
+      team: 0
+      color: {r: 0, g: 0, b: 0, a: 0}
+      score: 0
+    deathsScore: 0
+    killsScore: 0
   explosionPrefab: {fileID: 8549134280864839954, guid: d848d7ff6de5f0c479843a5ed4a086fa,
     type: 3}
   healthBar: {fileID: 1947967324733954245}
-  maxHealth: 100
+  maxHealth: 10
   currentHealth: 0
   moveSpeed: 3.5
   rotationSpeed: 5

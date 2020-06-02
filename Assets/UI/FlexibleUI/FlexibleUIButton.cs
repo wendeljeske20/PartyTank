@@ -24,11 +24,12 @@ namespace Game.UI
 			//image.color = color;
 			//image.sprite = flexibleUIData.sprites[(int)spriteType];
 
-			button.colors = flexibleUIData.buttonColorBlock;
+			//button.colors = UIStyle.Instance.flexibleUIData.buttonColorBlock;
 
-			if (text)
-				text.color = flexibleUIData.buttonTextColor;
+			//if (text)
+			//text.color = UIStyle.Instance.flexibleUIData.buttonTextColor;
+
+			button.spriteState = UIStyle.Instance.flexibleUIData.spriteStates[0];
 		}
 	}
-
 }

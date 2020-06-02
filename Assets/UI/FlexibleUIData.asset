@@ -13,20 +13,29 @@ MonoBehaviour:
   m_Name: FlexibleUIData
   m_EditorClassIdentifier: 
   sprites:
-  - {fileID: 21300000, guid: 01625bae09e095342b07e34329b9f770, type: 3}
-  - {fileID: 21300000, guid: 5410a4ead20580945a1a46bee423bc8a, type: 3}
+  - {fileID: 21300000, guid: 4892d4be2065885449c2157c39141342, type: 3}
+  - {fileID: 21300000, guid: 54b338386cfb3ce4fbf13e5d96c29319, type: 3}
+  - {fileID: 21300000, guid: 6b459c26713d1434e9a8f4f1722e8ca7, type: 3}
+  - {fileID: 21300000, guid: 2f7ba423c38764d47932daec51c77ca1, type: 3}
+  - {fileID: 21300000, guid: 4892d4be2065885449c2157c39141342, type: 3}
+  - {fileID: 21300000, guid: d9a5dd87affb3d842853e6dd5b298ed7, type: 3}
   colors:
-  - {r: 0.2627451, g: 0.2627451, b: 0.2627451, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0, g: 0.7692599, b: 1, a: 1}
+  - {r: 0, g: 0.35710153, b: 0.7264151, a: 1}
+  - {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
-  - {r: 0, g: 0.5968418, b: 1, a: 1}
-  - {r: 0, g: 0.23921569, b: 0.43529412, a: 1}
-  buttonColorBlock:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.3254717, g: 0.76986676, b: 1, a: 1}
-    m_PressedColor: {r: 0.7843138, g: 0.7843138, b: 0.7843138, a: 1}
-    m_SelectedColor: {r: 0.60784316, g: 0.60784316, b: 0.60784316, a: 1}
-    m_DisabledColor: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 1}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
+  - {r: 0.4811321, g: 0, b: 0, a: 1}
+  spriteStates:
+  - m_HighlightedSprite: {fileID: 21300000, guid: dbbbf07816147c94e9f8c2d0c6e2538e,
+      type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: c52e1e45bcb697d4ca927a0e0d548341, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: e4913950f5452ac40a28d99176d56007, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: a5eecbfe40ee0a24b85d58bb9d879869, type: 3}
+  selectableStates:
+  - m_HighlightedSprite: {fileID: 21300000, guid: dbbbf07816147c94e9f8c2d0c6e2538e,
+      type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 6b459c26713d1434e9a8f4f1722e8ca7, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: 6b459c26713d1434e9a8f4f1722e8ca7, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: a5eecbfe40ee0a24b85d58bb9d879869, type: 3}
   buttonTextColor: {r: 0, g: 0, b: 0, a: 1}

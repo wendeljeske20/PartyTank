@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 264d3c83026aab14ba01550f221eb44e, type: 3}
-  m_Name: UIStyle
+  m_Script: {fileID: 188390376, guid: a4865f1ab4504ed8a368670db22f409c, type: 3}
+  m_Name: ImportSettingsConfig
   m_EditorClassIdentifier: 
-  font: {fileID: 12800000, guid: 75cb672c626c9e74db48b575e4e869e9, type: 3}
-  fontAsset: {fileID: 11400000, guid: 64883c92e170c6e4fb9ab8ecdd52b7c2, type: 2}
-  lineColor: {r: 0, g: 0, b: 0, a: 0}
+  automateBeforeBuild: 1

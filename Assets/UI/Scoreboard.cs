@@ -45,7 +45,7 @@ public class Scoreboard : MonoBehaviour
 				{
 					ScoreElement scoreElement = teamScorePanel.content.GetChild(j).GetComponent<ScoreElement>();
 
-					if (j < elementCount)
+					if (ShoudEnableTeamScorePanel(j))
 					{
 						scoreElement.gameObject.SetActive(true);
 						continue;
@@ -71,19 +71,22 @@ public class Scoreboard : MonoBehaviour
 		{
 			TeamScorePanel teamScorePanel = content.GetChild(i).GetComponent<TeamScorePanel>();
 
-			if (ShoudEnableTeamScorePanel(i))
+			if (i < teamCount)
 			{
-				teamScorePanel.scoreText.text = LobbyManager.playerDatas.First(
-					x => (int)x.Value.teamData.team == i
-				).Value.teamData.score.ToString();
+				//teamScorePanel.scoreText.text = LobbyManager.playerDatas.FirstOrDefault(
+				//	x => (int)x.Value.teamData.team == i
+				//).Value.teamData.score.ToString();
 
 				for (int j = 0; j < elementCount; j++)
 				{
 					ScoreElement scoreElement = teamScorePanel.content.GetChild(j).GetComponent<ScoreElement>();
-					//scoreElement.deathsText = LobbyManager.playerDatas.First(x=>x.Value.)
 
 					if (j < elementCount)
 					{
+						//scoreElement.deathsText.text = LobbyManager.playerDatas.First(
+						//	x => i * 2 + j == x.Value.lobbyIndex
+						//).Value.deathsScore.ToString();
+
 						continue;
 					}
 
@@ -102,8 +105,8 @@ public class Scoreboard : MonoBehaviour
 
 	public void Show()
 	{
-		UpdateScores();
 		gameObject.SetActive(true);
+		UpdateScores();
 	}
 
 	public void Hide()
