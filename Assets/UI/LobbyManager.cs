@@ -13,7 +13,7 @@ public class LobbyManager : MonoBehaviour
 	public static string playerName = "123";
 	public static bool isHost;
 
-	public GameObject gamemodeDropdown;
+	public Switch gamemodeSwitch;
 
 	public Transform spectatorsContent;
 
@@ -60,7 +60,7 @@ public class LobbyManager : MonoBehaviour
 	{
 		if (!isHost)
 		{
-			gamemodeDropdown.SetActive(false);
+			gamemodeSwitch.gameObject.SetActive(false);
 		}
 		GameObject.Find("Text123").GetComponent<Text>().text = playerName;
 		//string msg = "";

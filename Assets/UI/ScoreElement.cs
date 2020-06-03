@@ -10,6 +10,8 @@ public class ScoreElement : MonoBehaviour
 	public TMPro.TextMeshProUGUI deathsText;
 
 	public TMPro.TextMeshProUGUI killsText;
+
+	public PlayerData playerData;
 	
 	public void ResetPanel()
 	{

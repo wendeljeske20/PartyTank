@@ -14,6 +14,10 @@ public class TeamScorePanel : MonoBehaviour
 
 	public ScoreElement[] scoreElements;
 
+	public int playerCount;
+
+	public Team team;
+
 	public void ResetPanel()
 	{
 		scoreText.text = "0";
