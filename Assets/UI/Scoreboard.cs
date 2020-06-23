@@ -67,6 +67,7 @@ public class Scoreboard : MonoBehaviour
 					teamScorePanel.playerCount++;
 
 					ScoreElement scoreElement = teamScorePanel.content.GetChild(j).GetComponent<ScoreElement>();
+					scoreElement.nameText.text = playerData.name.ToString();
 					scoreElement.gameObject.SetActive(true);
 
 					j++;
@@ -118,35 +119,42 @@ public class Scoreboard : MonoBehaviour
 		int teamCount = Mathf.FloorToInt(4 / ((int)GameStats.gameMode + 1));
 		int elementCount = teamCount / 4;
 
-		for (int i = 0; i < content.childCount; i++)
+		for (int i = 0; i < teamScorePanels.Count; i++)
 		{
-			TeamScorePanel teamScorePanel = content.GetChild(i).GetComponent<TeamScorePanel>();
-
-			if (i < teamCount)
-			{
-				//teamScorePanel.scoreText.text = LobbyManager.playerDatas.FirstOrDefault(
-				//	x => (int)x.Value.teamData.team == i
-				//).Value.teamData.score.ToString();
-
-				for (int j = 0; j < elementCount; j++)
-				{
-					ScoreElement scoreElement = teamScorePanel.content.GetChild(j).GetComponent<ScoreElement>();
-
-					if (j < elementCount)
-					{
-						//scoreElement.deathsText.text = LobbyManager.playerDatas.First(
-						//	x => i * 2 + j == x.Value.lobbyIndex
-						//).Value.deathsScore.ToString();
-
-						continue;
-					}
-
-				}
-
-				continue;
-			}
-
+			TeamScorePanel teamScorePanel = teamScorePanels[i];
+			teamScorePanel.scoreText.text = LobbyManager.playerDatas.FirstOrDefault(
+				x => x.Value.teamData.team == teamScorePanel.team
+			).Value.teamData.score.ToString();
 		}
+		//for (int i = 0; i < content.childCount; i++)
+		//{
+		//	TeamScorePanel teamScorePanel = content.GetChild(i).GetComponent<TeamScorePanel>();
+
+		//	if (i < teamCount)
+		//	{
+		//		//teamScorePanel.scoreText.text = LobbyManager.playerDatas.FirstOrDefault(
+		//		//	x => (int)x.Value.teamData.team == i
+		//		//).Value.teamData.score.ToString();
+
+		//		for (int j = 0; j < elementCount; j++)
+		//		{
+		//			ScoreElement scoreElement = teamScorePanel.content.GetChild(j).GetComponent<ScoreElement>();
+
+		//			if (j < elementCount)
+		//			{
+		//				//scoreElement.deathsText.text = LobbyManager.playerDatas.First(
+		//				//	x => i * 2 + j == x.Value.lobbyIndex
+		//				//).Value.deathsScore.ToString();
+
+		//				continue;
+		//			}
+
+		//		}
+
+		//		continue;
+		//	}
+
+		//}
 	}
 
 	public void IncreaseTeamScore(Team team)

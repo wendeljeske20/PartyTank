@@ -109,10 +109,10 @@ public class Player : MonoBehaviour, IDamagable
 		{
 			if (ownerPlayer != data)
 			{
-				ownerPlayer.killsScore++;
+				//ownerPlayer.killsScore++;
 			}
 
-			data.deathsScore++;
+			//data.deathsScore++;
 			OnDeath.Invoke(this);
 			ToDestroy();
 			SendDestroy();

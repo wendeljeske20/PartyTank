@@ -108,6 +108,15 @@ public class MatchManager : MonoBehaviour
 	private void SetWinnerTeam(Team team)
 	{
 		roundStarted = false;
+
+		foreach (var player in players)
+		{
+			if(player.Value.Team == team)
+			{
+				player.Value.data.teamData.score++;
+			}
+		}
+
 		UnityTask.DelayedAction(1.0f, () =>
 		{
 			DestroyAllProjectiles();

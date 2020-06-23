@@ -50,10 +50,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 8549134280864839954, guid: cd5b2b2bab9df56459f26121be727d7b,
     type: 3}
+  ownerPlayer:
+    id: 0
+    name: 
+    lobbyIndex: 0
+    isLocal: 0
+    teamData:
+      team: 0
+      color: {r: 0, g: 0, b: 0, a: 0}
+      score: 0
+    deathsScore: 0
+    killsScore: 0
   team: 0
   moveSpeed: 0
   damage: 0
-  duration: 30
+  duration: 6
   rb: {fileID: 0}
   canDestroy: 1
   id: 0

@@ -325,12 +325,10 @@ MonoBehaviour:
       team: 0
       color: {r: 0, g: 0, b: 0, a: 0}
       score: 0
-    deathsScore: 0
-    killsScore: 0
   explosionPrefab: {fileID: 8549134280864839954, guid: d848d7ff6de5f0c479843a5ed4a086fa,
     type: 3}
   healthBar: {fileID: 1947967324733954245}
-  maxHealth: 10
+  maxHealth: 100
   currentHealth: 0
   moveSpeed: 3.5
   rotationSpeed: 5
@@ -5129,8 +5127,8 @@ MonoBehaviour:
   projectilePrefab: {fileID: 332656174168820290, guid: ad7d4af1ca32a2e4e94c4a3807cf06c9,
     type: 3}
   attackInterval: 1
-  projectileSpeed: 6
-  damage: 10
+  projectileSpeed: 5
+  damage: 40
 --- !u!33 &5079235398353106865
 MeshFilter:
   m_ObjectHideFlags: 0

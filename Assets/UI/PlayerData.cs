@@ -16,9 +16,9 @@ public class PlayerData
 
 	public TeamData teamData;
 
-	public int deathsScore;
+	//public int deathsScore;
 
-	public int killsScore;
+	//public int killsScore;
 
 	//public bool ready;
 
