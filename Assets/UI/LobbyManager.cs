@@ -14,6 +14,7 @@ public class LobbyManager : MonoBehaviour
 	public static bool isHost;
 
 	public Switch gamemodeSwitch;
+	public Switch arenaSwitch;
 
 	public Transform spectatorsContent;
 
@@ -27,6 +28,10 @@ public class LobbyManager : MonoBehaviour
 	public GameObject teamsContent;
 
 	public Image[] teamPanels;
+
+	public Image arenaImage;
+	public Sprite desertSprite;
+	public Sprite forestSprite;
 
 	private int playerCount;
 
@@ -61,6 +66,7 @@ public class LobbyManager : MonoBehaviour
 		if (!isHost)
 		{
 			gamemodeSwitch.gameObject.SetActive(false);
+			arenaSwitch.gameObject.SetActive(false);
 		}
 		GameObject.Find("Text123").GetComponent<Text>().text = playerName;
 		//string msg = "";
@@ -148,13 +154,20 @@ public class LobbyManager : MonoBehaviour
 
 	public void SendStartMatch()
 	{
-		NUServer.SendReliable(new Packet(Message.START_MATCH.ToString("d"), NUServer.GetConnectedClients()));
-		StartMatch();
+		Message message = Message.START_DESERT;
+
+		if (GameStats.arenaIndex == 1)
+		{
+			message = Message.START_FOREST;
+		}
+
+		NUServer.SendReliable(new Packet(message.ToString("d"), NUServer.GetConnectedClients()));
+		StartMatch(GameStats.arenaIndex + 1);
 	}
 
-	private void StartMatch()
+	private void StartMatch(int index)
 	{
-		SceneManager.LoadScene(1);
+		SceneManager.LoadScene(index);
 	}
 
 	public void SetGameMode(int index)
@@ -203,6 +216,21 @@ public class LobbyManager : MonoBehaviour
 		//teamsContent.GetComponent<HorizontalLayoutGroup>().enabled = true;
 
 
+	}
+
+	public void SetArena(int index)
+	{
+		GameStats.arenaIndex = index;
+		if (index == 0)
+		{
+			arenaImage.sprite = desertSprite;
+		}
+		else if (index == 1)
+		{
+			arenaImage.sprite = forestSprite;
+		}
+
+		SendArena();
 	}
 
 	public void SetRoundTime(int index)
@@ -468,9 +496,18 @@ public class LobbyManager : MonoBehaviour
 			int index = int.Parse(args[1]);
 			SetGameMode(index);
 		}
-		else if (msgID == (int)Message.START_MATCH)
+		else if (msgID == (int)Message.SET_ARENA)
 		{
-			StartMatch();
+			int index = int.Parse(args[1]);
+			SetArena(index);
+		}
+		else if (msgID == (int)Message.START_DESERT)
+		{
+			StartMatch(1);
+		}
+		else if (msgID == (int)Message.START_FOREST)
+		{
+			StartMatch(2);
 		}
 
 		if (packet.id >= 0)
@@ -482,6 +519,12 @@ public class LobbyManager : MonoBehaviour
 	private void SendGameMode()
 	{
 		string sendMsg = Message.SET_GAMEMODE.ToString("d") + "|" + (int)GameStats.gameMode;
+		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
+	}
+
+	private void SendArena()
+	{
+		string sendMsg = Message.SET_ARENA.ToString("d") + "|" + GameStats.arenaIndex;
 		NUServer.SendReliable(new Packet(sendMsg, NUServer.GetConnectedClients()));
 	}
 

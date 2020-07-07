@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Lobby.unity
     guid: dae0c1d6b330fc84894cdc0ee5b899a9
   - enabled: 1
-    path: Assets/Scenes/Game.unity
+    path: Assets/Scenes/Desert.unity
     guid: 94c44fc8b7f04464ca437f7a60b3efc7
+  - enabled: 1
+    path: Assets/Scenes/Forest.unity
+    guid: 8360bd668c3746545b5dcba90e395b97
   m_configObjects: {}

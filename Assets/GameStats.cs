@@ -8,7 +8,7 @@ public static class GameStats
 	public static GameMode gameMode = GameMode.FREE_FOR_ALL;
 
 	public static List<string> arenaNames;
-	public static int arenaIndex = 1;
+	public static int arenaIndex = 0;
 
 	public static int matchesAmount = 1;
 

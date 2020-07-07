@@ -5126,9 +5126,9 @@ MonoBehaviour:
   muzzle: {fileID: 6886686872393775859}
   projectilePrefab: {fileID: 332656174168820290, guid: ad7d4af1ca32a2e4e94c4a3807cf06c9,
     type: 3}
-  attackInterval: 1
+  attackInterval: 2
   projectileSpeed: 5
-  damage: 40
+  damage: 15
 --- !u!33 &5079235398353106865
 MeshFilter:
   m_ObjectHideFlags: 0
