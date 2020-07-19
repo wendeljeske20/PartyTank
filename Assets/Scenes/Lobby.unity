@@ -10582,7 +10582,7 @@ MonoBehaviour:
   - {fileID: 515752026}
   arenaImage: {fileID: 2077717494}
   desertSprite: {fileID: 21300000, guid: c6e9d9aa1fdcab24e9dbaee545c1e378, type: 3}
-  forestSprite: {fileID: 21300000, guid: c7dd97e9cd879304795b366cbf187bfe, type: 3}
+  forestSprite: {fileID: 21300000, guid: 4ed60a3d9ff23cd47b103098090cde69, type: 3}
 --- !u!114 &39399419131166301
 MonoBehaviour:
   m_ObjectHideFlags: 0
